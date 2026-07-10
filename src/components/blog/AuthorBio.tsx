@@ -134,18 +134,18 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
             <Image
               src={avatar}
               alt={name}
-              aspect="square"
+              aspect="auto"
               rounded="full"
-              className="h-16 w-16"
+              wrapperClassName="h-16 w-16"
             />
           </a>
         ) : (
           <Image
             src={avatar}
             alt={name}
-            aspect="square"
+            aspect="auto"
             rounded="full"
-            className="h-16 w-16 shrink-0"
+            wrapperClassName="h-16 w-16 shrink-0"
           />
         ))}
       <div className="min-w-0 flex-1">

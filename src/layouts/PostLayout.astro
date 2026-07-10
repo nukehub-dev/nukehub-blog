@@ -1,6 +1,7 @@
 ---
 import { format } from "date-fns";
 import { getEntry, getCollection, render } from "astro:content";
+import { cn } from "@lib/utils";
 import BaseLayout from "./BaseLayout.astro";
 import { Badge } from "@components/ui/Badge";
 import { Image } from "@components/ui/Image";
@@ -32,9 +33,14 @@ const {
   coAuthors: coAuthorIds,
   tags,
   coverImage,
+  coverImageFit,
+  coverImageTransparent,
   canonicalUrl,
   references,
 } = post.data;
+
+const fit = coverImageFit ?? "cover";
+const isContain = fit === "contain";
 
 const authorEntries = await Promise.all(
   [authorId, ...(coAuthorIds ?? [])]
@@ -149,14 +155,30 @@ const articleJsonLd = {
 
           {
             coverImage && (
-              <Image
-                src={coverImage}
-                alt={title}
-                aspect="video"
-                rounded="xl"
-                className="w-full"
-                client:load
-              />
+              <div
+                class={cn(
+                  "overflow-hidden rounded-xl",
+                  isContain
+                    ? "flex items-center justify-center p-6 sm:p-10"
+                    : "aspect-video bg-muted",
+                  isContain && !coverImageTransparent && "bg-muted",
+                )}
+              >
+                <Image
+                  src={coverImage}
+                  alt={title}
+                  aspect={isContain ? "square" : "video"}
+                  rounded="xl"
+                  fit={fit}
+                  transparent={coverImageTransparent}
+                  loading="eager"
+                  wrapperClassName={cn(
+                    "w-full",
+                    isContain && "max-w-sm sm:max-w-md lg:max-w-lg",
+                  )}
+                  client:load
+                />
+              </div>
             )
           }
         </header>

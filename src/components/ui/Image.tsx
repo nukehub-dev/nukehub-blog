@@ -11,6 +11,10 @@ interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   aspect?: "square" | "video" | "portrait" | "auto";
   /** Rounded style. */
   rounded?: "none" | "sm" | "md" | "lg" | "xl" | "full";
+  /** Object-fit behavior. */
+  fit?: "cover" | "contain" | "fill" | "none";
+  /** Remove the default muted background (useful for transparent images). */
+  transparent?: boolean;
 }
 
 export function Image({
@@ -21,6 +25,8 @@ export function Image({
   className,
   aspect = "auto",
   rounded = "lg",
+  fit = "cover",
+  transparent = false,
   ...imgProps
 }: ImageProps) {
   const [status, setStatus] = React.useState<"loading" | "loaded" | "error">(
@@ -32,7 +38,8 @@ export function Image({
 
   // If the image is already cached and valid, skip the shimmer entirely.
   // Must check naturalWidth > 0 to avoid treating broken/missing images as loaded.
-  React.useEffect(() => {
+  // useLayoutEffect removes the placeholder before the browser paints.
+  React.useLayoutEffect(() => {
     const img = imgRef.current;
     if (!img) return;
     if (img.complete) {
@@ -63,7 +70,8 @@ export function Image({
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-muted",
+        "relative overflow-hidden",
+        transparent ? "bg-transparent" : "bg-muted",
         aspectClass[aspect],
         roundedClass[rounded],
         wrapperClassName,
@@ -95,7 +103,7 @@ export function Image({
           alt={alt}
           loading={imgProps.loading ?? "lazy"}
           decoding={imgProps.decoding ?? "async"}
-          className={cn("h-full w-full object-cover", className)}
+          className={cn("h-full w-full", `object-${fit}`, className)}
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           {...imgProps}
@@ -104,7 +112,12 @@ export function Image({
 
       {/* Initials fallback */}
       {status === "error" && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center",
+            transparent ? "bg-transparent" : "bg-muted",
+          )}
+        >
           <span className="text-2xl font-bold text-foreground select-none">
             {initial}
           </span>

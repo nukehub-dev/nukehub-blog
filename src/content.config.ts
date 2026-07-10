@@ -22,6 +22,8 @@ const posts = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     coverImage: z.string().optional(),
+    coverImageFit: z.enum(["cover", "contain", "fill", "none"]).optional(),
+    coverImageTransparent: z.boolean().default(false),
     canonicalUrl: z.string().url().optional(),
     references: z
       .array(

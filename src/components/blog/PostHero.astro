@@ -1,5 +1,6 @@
 ---
 import { format } from "date-fns";
+import { cn } from "@lib/utils";
 import { Badge } from "@components/ui/Badge";
 import { Image } from "@components/ui/Image";
 import { getCategoryLabel } from "@lib/categories";
@@ -10,8 +11,19 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, publishedDate, category, coverImage, tags } =
-  post.data;
+const {
+  title,
+  description,
+  publishedDate,
+  category,
+  coverImage,
+  coverImageFit,
+  coverImageTransparent,
+  tags,
+} = post.data;
+
+const fit = coverImageFit ?? "cover";
+const isContain = fit === "contain";
 ---
 
 <section
@@ -20,14 +32,27 @@ const { title, description, publishedDate, category, coverImage, tags } =
   <div class="grid lg:grid-cols-2">
     {
       coverImage && (
-        <div class="relative aspect-video lg:aspect-auto">
+        <div
+          class={cn(
+            "relative aspect-video overflow-hidden lg:aspect-auto",
+            isContain
+              ? "flex items-center justify-center p-6 sm:p-10 lg:p-14"
+              : "bg-muted",
+            !coverImageTransparent && isContain && "bg-muted",
+          )}
+        >
           <Image
             src={coverImage}
             alt={title}
             aspect="auto"
             rounded="none"
-            wrapperClassName="h-full"
-            className="absolute inset-0 h-full w-full"
+            fit={fit}
+            transparent={coverImageTransparent}
+            loading="eager"
+            wrapperClassName={cn(
+              "h-full w-full",
+              isContain && "max-w-xs sm:max-w-sm lg:max-w-md",
+            )}
             client:load
           />
         </div>

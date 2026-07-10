@@ -105,21 +105,23 @@ benchmark data.
 
 ### Frontmatter schema
 
-| Field           | Required | Type     | Notes                                                                   |
-| --------------- | -------- | -------- | ----------------------------------------------------------------------- |
-| `title`         | Yes      | string   | Post title                                                              |
-| `description`   | Yes      | string   | Short summary for SEO and cards                                         |
-| `publishedDate` | Yes      | date     | `YYYY-MM-DD`                                                            |
-| `updatedDate`   | No       | date     | `YYYY-MM-DD`                                                            |
-| `category`      | Yes      | enum     | `news`, `tutorials`, `nuclear-industry`, `community`, `project-updates` |
-| `author`        | Yes      | string   | ID of the primary author in `src/content/authors/`                      |
-| `coAuthors`     | No       | string[] | IDs of additional authors. Default `[]`                                 |
-| `tags`          | No       | string[] | Default `[]`                                                            |
-| `featured`      | No       | boolean  | Default `false`                                                         |
-| `draft`         | No       | boolean  | Default `false`; excluded from production builds                        |
-| `coverImage`    | No       | string   | Path to an image in `public/`                                           |
-| `canonicalUrl`  | No       | string   | If the post was originally published elsewhere                          |
-| `references`    | No       | object[] | Citations rendered at the end of the post. See below.                   |
+| Field                   | Required | Type     | Notes                                                                   |
+| ----------------------- | -------- | -------- | ----------------------------------------------------------------------- |
+| `title`                 | Yes      | string   | Post title                                                              |
+| `description`           | Yes      | string   | Short summary for SEO and cards                                         |
+| `publishedDate`         | Yes      | date     | `YYYY-MM-DD`                                                            |
+| `updatedDate`           | No       | date     | `YYYY-MM-DD`                                                            |
+| `category`              | Yes      | enum     | `news`, `tutorials`, `nuclear-industry`, `community`, `project-updates` |
+| `author`                | Yes      | string   | ID of the primary author in `src/content/authors/`                      |
+| `coAuthors`             | No       | string[] | IDs of additional authors. Default `[]`                                 |
+| `tags`                  | No       | string[] | Default `[]`                                                            |
+| `featured`              | No       | boolean  | Default `false`                                                         |
+| `draft`                 | No       | boolean  | Default `false`; excluded from production builds                        |
+| `coverImage`            | No       | string   | Path to an image in `public/`                                           |
+| `coverImageFit`         | No       | enum     | `cover`, `contain`, `fill`, `none`. Default `cover`                     |
+| `coverImageTransparent` | No       | boolean  | Remove the default gray background. Default `false`                     |
+| `canonicalUrl`          | No       | string   | If the post was originally published elsewhere                          |
+| `references`            | No       | object[] | Citations rendered at the end of the post. See below.                   |
 
 ### References
 

@@ -37,20 +37,20 @@ export function Odysee({
   }
 
   return (
-    <div
-      className={cn(
-        "relative aspect-video w-full overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm",
-        className,
-      )}
-    >
-      <iframe
-        src={src}
-        title={title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        loading="lazy"
-        className="absolute inset-0 h-full w-full"
-      />
-    </div>
+    <figure className={cn("my-6", className)}>
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm">
+        <iframe
+          src={src}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+          className="absolute inset-0 h-full w-full"
+        />
+      </div>
+      <figcaption className="mt-2 text-center text-xs text-muted-foreground">
+        {title}
+      </figcaption>
+    </figure>
   );
 }

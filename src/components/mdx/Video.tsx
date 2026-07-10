@@ -22,27 +22,28 @@ export function Video({
   className,
 }: VideoProps) {
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm",
-        className,
+    <figure className={cn("my-6", className)}>
+      <div className="overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm">
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <video
+          src={src}
+          poster={poster}
+          controls={controls}
+          autoPlay={autoplay}
+          muted={muted}
+          loop={loop}
+          playsInline
+          className="w-full"
+          preload="metadata"
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      {title && (
+        <figcaption className="mt-2 text-center text-xs text-muted-foreground">
+          {title}
+        </figcaption>
       )}
-    >
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video
-        src={src}
-        title={title}
-        poster={poster}
-        controls={controls}
-        autoPlay={autoplay}
-        muted={muted}
-        loop={loop}
-        playsInline
-        className="w-full"
-        preload="metadata"
-      >
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    </figure>
   );
 }
