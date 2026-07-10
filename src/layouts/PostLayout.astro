@@ -1,0 +1,159 @@
+---
+import { format } from "date-fns";
+import { getEntry, getCollection, render } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import { Badge } from "@components/ui/Badge";
+import { Image } from "@components/ui/Image";
+import { AuthorBio } from "@components/blog/AuthorBio";
+import { PostCard } from "@components/blog/PostCard";
+import PostContent from "@components/blog/PostContent.astro";
+import { ReadingProgress } from "@components/blog/ReadingProgress";
+import { getCategoryLabel } from "@lib/categories";
+import { getReadingTime, getRelatedPosts, type Post } from "@lib/posts";
+import { SITE } from "@data/site";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const {
+  title,
+  description,
+  publishedDate,
+  updatedDate,
+  category,
+  author: authorId,
+  tags,
+  coverImage,
+  canonicalUrl,
+} = post.data;
+
+const author = await getEntry("authors", authorId);
+const allPosts = await getCollection("posts");
+const relatedPosts = getRelatedPosts(post, allPosts, 3);
+const readingTime = getReadingTime(post.body ?? "");
+
+const permalink = `/posts/${post.id}`;
+const pageImage = coverImage ?? SITE.ogImage;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  url: `${SITE.url}${permalink}`,
+  image: `${SITE.url}${pageImage}`,
+  datePublished: publishedDate.toISOString(),
+  dateModified: updatedDate?.toISOString() ?? publishedDate.toISOString(),
+  author: author
+    ? {
+        "@type": "Person",
+        name: author.data.name,
+        url: `${SITE.url}/authors/${author.id}`,
+      }
+    : undefined,
+  keywords: tags.join(", "),
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  image={pageImage}
+  jsonLd={articleJsonLd}
+>
+  <ReadingProgress client:idle />
+
+  <article
+    id="article-content"
+    class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8"
+  >
+    <header class="space-y-6">
+      <div class="flex flex-wrap items-center gap-2">
+        <Badge variant="default">{getCategoryLabel(category)}</Badge>
+        {tags.map((tag) => <Badge variant="ghost">{tag}</Badge>)}
+      </div>
+
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+        {title}
+      </h1>
+
+      <p class="text-lg text-muted-foreground">{description}</p>
+
+      <div
+        class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground"
+      >
+        <time datetime={publishedDate.toISOString()}>
+          {format(publishedDate, "MMMM d, yyyy")}
+        </time>
+        {
+          updatedDate && (
+            <span>
+              Updated{" "}
+              <time datetime={updatedDate.toISOString()}>
+                {format(updatedDate, "MMMM d, yyyy")}
+              </time>
+            </span>
+          )
+        }
+        <span>{readingTime} min read</span>
+        {
+          canonicalUrl && (
+            <a
+              href={canonicalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-primary hover:underline"
+            >
+              Originally published
+            </a>
+          )
+        }
+      </div>
+
+      {
+        coverImage && (
+          <Image
+            src={coverImage}
+            alt={title}
+            aspect="video"
+            rounded="xl"
+            className="w-full"
+          />
+        )
+      }
+    </header>
+
+    <div class="mt-10">
+      <PostContent>
+        <Content />
+      </PostContent>
+    </div>
+
+    {
+      author && (
+        <div class="mt-12">
+          <AuthorBio author={author} />
+        </div>
+      )
+    }
+
+    {
+      relatedPosts.length > 0 && (
+        <aside class="mt-16">
+          <h2 class="mb-6 text-2xl font-semibold tracking-tight">
+            Related posts
+          </h2>
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((relatedPost) => (
+              <PostCard post={relatedPost} />
+            ))}
+          </div>
+        </aside>
+      )
+    }
+  </article>
+</BaseLayout>

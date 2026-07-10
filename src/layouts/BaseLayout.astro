@@ -1,0 +1,236 @@
+---
+import "@styles/global.css";
+import { Header } from "@components/layout/Header";
+import { Footer } from "@components/layout/Footer";
+import { ScrollProgress } from "@components/shared/ScrollProgress";
+import { ErrorBoundary } from "@components/shared/ErrorBoundary";
+import Analytics from "@components/shared/Analytics.astro";
+import { SITE } from "@data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  permalink?: string;
+  image?: string;
+  ogImage?: string;
+  bodyClass?: string;
+  htmlClass?: string;
+  showFooter?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = SITE.description,
+  keywords = "nukehub, nuclear, blog, open source, tutorials, community",
+  permalink = "/",
+  image = SITE.ogImage,
+  ogImage,
+  bodyClass,
+  htmlClass,
+  showFooter = true,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${SITE.name}` : SITE.name;
+const canonicalUrl = `${SITE.url}${permalink}`;
+const resolvedOgImage = `${SITE.url}${ogImage ?? image}`;
+
+const baseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  name: SITE.name,
+  description,
+  url: SITE.url,
+  image: `${SITE.url}${SITE.ogImage}`,
+};
+
+const jsonLdBlocks = jsonLd
+  ? Array.isArray(jsonLd)
+    ? [baseJsonLd, ...jsonLd]
+    : [baseJsonLd, jsonLd]
+  : [baseJsonLd];
+---
+
+<!doctype html>
+<html lang={SITE.language} class={htmlClass || ""}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.name} RSS Feed`}
+      href={`${SITE.url}/rss.xml`}
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!--
+      Dynamic favicon: swaps the tab icon to the current theme accent once
+      CSS variables are available. Falls back to /favicon.svg when JS is disabled.
+    -->
+    <script>
+      import { updateFavicon, updateThemeColor } from "@lib/favicon";
+      updateFavicon();
+      updateThemeColor();
+    </script>
+
+    <!-- Preload Geist fonts for faster first paint -->
+    <link
+      rel="preload"
+      href="/fonts/Geist-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/GeistMono-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:description" content={description} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SITE.twitterHandle} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <!-- Schema.org -->
+    {
+      jsonLdBlocks.map((block) => (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(block)}
+        />
+      ))
+    }
+
+    <!--
+      ============================================================
+      Theme init script — MUST be inline and blocking to prevent
+      flash of unstyled content (FOUC).
+      ============================================================
+    -->
+    <script is:inline>
+      (function () {
+        var html = document.documentElement;
+        var storedTheme = localStorage.getItem("theme");
+        var storedAccent = localStorage.getItem("accent") || "orange";
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+
+        var resolvedTheme;
+        if (storedTheme === "light" || storedTheme === "dark") {
+          resolvedTheme = storedTheme;
+        } else if (storedTheme === "system" || !storedTheme) {
+          resolvedTheme = prefersDark ? "dark" : "light";
+        } else {
+          resolvedTheme = "light";
+        }
+
+        html.setAttribute("data-theme", resolvedTheme);
+        html.setAttribute("data-accent", storedAccent);
+
+        var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          var accentMap = {
+            red: { light: "#e03131", dark: "#c92a2a" },
+            orange: { light: "#f37524", dark: "#d65a0f" },
+            green: { light: "#40c057", dark: "#2f9e44" },
+            cyan: { light: "#15aabf", dark: "#1098ad" },
+            purple: { light: "#be4bdb", dark: "#9c36b5" },
+          };
+          var color = (accentMap[storedAccent] || accentMap.orange)[
+            resolvedTheme
+          ];
+          metaThemeColor.setAttribute("content", color);
+        }
+      })();
+    </script>
+  </head>
+
+  <body class={`min-h-screen flex flex-col ${bodyClass || ""}`}>
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[150%] rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+    >
+      Skip to content
+    </a>
+
+    <ScrollProgress client:idle />
+    <Analytics />
+
+    <ErrorBoundary client:load>
+      <Header client:load />
+    </ErrorBoundary>
+
+    <main id="main-content" class="flex-1" role="main" tabindex="-1">
+      <slot />
+    </main>
+
+    {showFooter && <Footer client:load />}
+
+    <!-- Scroll to top -->
+    <button
+      id="scroll-top"
+      class="fixed bottom-6 right-6 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg opacity-0 pointer-events-none transition-all duration-300 hover:brightness-110"
+      aria-label="Scroll to top"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m18 15-6-6-6 6"></path>
+      </svg>
+    </button>
+
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById("scroll-top");
+        if (!btn) return;
+        window.addEventListener("scroll", function () {
+          if (window.scrollY > 300) {
+            btn.classList.remove("opacity-0", "pointer-events-none");
+            btn.classList.add("opacity-100", "pointer-events-auto");
+          } else {
+            btn.classList.remove("opacity-100", "pointer-events-auto");
+            btn.classList.add("opacity-0", "pointer-events-none");
+          }
+        });
+        btn.addEventListener("click", function () {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      })();
+    </script>
+  </body>
+</html>
