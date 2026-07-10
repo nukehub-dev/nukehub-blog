@@ -4,6 +4,8 @@ import { Container } from "@components/layout/Container";
 import PostHero from "@components/blog/PostHero.astro";
 import { PostList } from "@components/blog/PostList";
 import { CategoryNav } from "@components/blog/CategoryNav";
+import { MagneticButton } from "@components/shared/MagneticButton";
+import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import { getPublishedPosts, getFeaturedPosts } from "@lib/posts";
 import { SITE } from "@data/site";
 
@@ -14,8 +16,11 @@ const latestPosts = posts.slice(0, 6);
 ---
 
 <BaseLayout title="Home" permalink="/">
-  <section class="border-b border-border/50 bg-muted/30 py-20">
-    <Container>
+  <section
+    class="relative overflow-hidden border-b border-border/50 bg-muted/30 py-20"
+  >
+    <FloatingParticles client:idle count={24} />
+    <Container className="relative z-10">
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
           {SITE.name}
@@ -24,12 +29,13 @@ const latestPosts = posts.slice(0, 6);
           {SITE.tagline}
         </p>
         <div class="mt-8 flex justify-center gap-3">
-          <a
+          <MagneticButton
             href="/posts"
-            class="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hover:brightness-110"
+            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hover:brightness-110"
+            client:load
           >
             Browse posts
-          </a>
+          </MagneticButton>
           <a
             href="/rss.xml"
             class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"

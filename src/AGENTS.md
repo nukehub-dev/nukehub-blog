@@ -51,7 +51,8 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 - `src/components/layout/` — site frame: `Header`, `Footer`, `Container`.
 - `src/components/shared/` — global UI islands: `ThemeToggle`,
   `ScrollProgress`, `ErrorBoundary`, `Analytics`, `CommandPalette`,
-  `CommandPaletteManager`.
+  `CommandPaletteManager`, `GlassContextMenu`, `GlobalContextMenu`,
+  `MagneticButton`. Also `decorations/FloatingParticles`.
 - `src/components/blog/` — blog-specific components: `PostCard`, `PostList`,
   `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, etc.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.

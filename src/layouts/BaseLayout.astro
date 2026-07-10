@@ -6,6 +6,7 @@ import { Footer } from "@components/layout/Footer";
 import { ScrollProgress } from "@components/shared/ScrollProgress";
 import { ErrorBoundary } from "@components/shared/ErrorBoundary";
 import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
+import { GlobalContextMenu } from "@components/shared/GlobalContextMenu";
 import Analytics from "@components/shared/Analytics.astro";
 import { SITE } from "@data/site";
 import { getPublishedPosts } from "@lib/posts";
@@ -251,6 +252,8 @@ const searchPages = [
     </main>
 
     {showFooter && <Footer client:load />}
+
+    <GlobalContextMenu client:idle />
 
     <!-- Scroll to top -->
     <button

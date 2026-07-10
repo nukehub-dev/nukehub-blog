@@ -15,7 +15,7 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <a href={`/posts/${post.id}`} className="group block">
-      <Card interactive className="h-full overflow-hidden">
+      <Card variant="bubble" interactive className="h-full overflow-hidden">
         {coverImage && (
           <Image
             src={coverImage}
