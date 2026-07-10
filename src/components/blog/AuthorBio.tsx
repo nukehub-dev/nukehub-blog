@@ -125,7 +125,7 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
             {metaItems.map((item, index) => (
               <span key={item.key} className="inline-flex items-center">
                 {index > 0 && (
-                  <span className="mx-1.5 select-none text-muted-foreground/50">
+                  <span className="mx-2.5 select-none text-muted-foreground/60">
                     ·
                   </span>
                 )}

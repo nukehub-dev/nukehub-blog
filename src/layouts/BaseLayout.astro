@@ -1,11 +1,15 @@
 ---
 import "@styles/global.css";
+import { getCollection } from "astro:content";
 import { Header } from "@components/layout/Header";
 import { Footer } from "@components/layout/Footer";
 import { ScrollProgress } from "@components/shared/ScrollProgress";
 import { ErrorBoundary } from "@components/shared/ErrorBoundary";
+import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
 import Analytics from "@components/shared/Analytics.astro";
 import { SITE } from "@data/site";
+import { getPublishedPosts } from "@lib/posts";
+import { CATEGORIES, getCategoryLabel } from "@lib/categories";
 
 interface Props {
   title?: string;
@@ -51,6 +55,53 @@ const jsonLdBlocks = jsonLd
     ? [baseJsonLd, ...jsonLd]
     : [baseJsonLd, jsonLd]
   : [baseJsonLd];
+
+const allPosts = await getPublishedPosts();
+const allAuthors = await getCollection("authors");
+const authorNameMap = new Map(allAuthors.map((a) => [a.id, a.data.name]));
+
+const searchPosts = allPosts.map((post) => ({
+  id: post.id,
+  title: post.data.title,
+  description: post.data.description,
+  url: `/posts/${post.id}`,
+  category: post.data.category,
+  categoryLabel: getCategoryLabel(post.data.category),
+  tags: post.data.tags,
+  date: post.data.publishedDate.toISOString(),
+  authorName: post.data.author
+    ? authorNameMap.get(post.data.author)
+    : undefined,
+}));
+
+const searchAuthors = allAuthors.map((author) => ({
+  id: author.id,
+  name: author.data.name,
+  role: author.data.role,
+  organization: author.data.organization,
+  url: `/authors/${author.id}`,
+}));
+
+const searchCategories = CATEGORIES.map((category) => ({
+  id: category.slug,
+  title: category.label,
+  description: category.description,
+  url: `/category/${category.slug}`,
+}));
+
+const searchPages = [
+  { id: "home", title: "Home", url: "/" },
+  { id: "posts", title: "All Posts", url: "/posts" },
+  { id: "categories", title: "Categories", url: "/categories" },
+  { id: "authors", title: "Authors", url: "/authors" },
+  { id: "rss", title: "RSS Feed", url: "/rss.xml" },
+  {
+    id: "main-site",
+    title: "Main Site",
+    url: "https://nukehub.org",
+    external: true,
+  },
+];
 ---
 
 <!doctype html>
@@ -186,6 +237,14 @@ const jsonLdBlocks = jsonLd
     <ErrorBoundary client:load>
       <Header client:load />
     </ErrorBoundary>
+
+    <CommandPaletteManager
+      client:load
+      posts={searchPosts}
+      authors={searchAuthors}
+      categories={searchCategories}
+      pages={searchPages}
+    />
 
     <main id="main-content" class="flex-1" role="main" tabindex="-1">
       <slot />

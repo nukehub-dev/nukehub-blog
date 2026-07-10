@@ -4,7 +4,6 @@ import { Container } from "@components/layout/Container";
 import PostHero from "@components/blog/PostHero.astro";
 import { PostList } from "@components/blog/PostList";
 import { CategoryNav } from "@components/blog/CategoryNav";
-import { PostSearch } from "@components/blog/PostSearch";
 import { getPublishedPosts, getFeaturedPosts } from "@lib/posts";
 import { SITE } from "@data/site";
 
@@ -68,8 +67,38 @@ const latestPosts = posts.slice(0, 6);
 
   <section class="border-t border-border/50 py-12">
     <Container>
-      <h2 class="mb-6 text-2xl font-semibold tracking-tight">Search posts</h2>
-      <PostSearch posts={posts} client:load />
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="mb-2 text-2xl font-semibold tracking-tight">Search</h2>
+        <p class="mb-6 text-sm text-muted-foreground">
+          Find posts, authors, categories, and pages across the blog.
+        </p>
+        <button
+          type="button"
+          class="group flex w-full items-center gap-3 rounded-xl border border-border/60 bg-muted px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-accent-foreground"
+          onclick="window.dispatchEvent(new CustomEvent('command-palette:open'))"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <span class="flex-1">Search posts, authors...</span>
+          <kbd
+            class="hidden rounded border border-border bg-background px-1.5 py-0.5 text-xs font-sans sm:inline"
+            >Ctrl K</kbd
+          >
+        </button>
+      </div>
     </Container>
   </section>
 

@@ -112,7 +112,7 @@ export function Image({
       {/* Initials fallback */}
       {status === "error" && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <span className="text-2xl font-bold text-muted-foreground select-none">
+          <span className="text-2xl font-bold text-foreground select-none">
             {initial}
           </span>
         </div>

@@ -3,7 +3,7 @@ import { cn } from "@lib/utils";
 import { navItems } from "@data/nav";
 import { Logo } from "@components/ui/Logo";
 import { ThemeToggle } from "@components/shared/ThemeToggle";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -41,6 +41,17 @@ export function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Command palette trigger */}
+          <button
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("command-palette:open"))
+            }
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            aria-label="Open search"
+          >
+            <Search className="h-[18px] w-[18px]" />
+          </button>
+
           {/* Theme + accent appearance toggle */}
           <ThemeToggle variant="dropdown" />
 
