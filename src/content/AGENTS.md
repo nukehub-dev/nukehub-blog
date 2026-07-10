@@ -16,7 +16,7 @@ additions/edits belong here.
 - `authors` collection uses `.yml`/`.yaml`.
 - Files with a leading underscore (`_*.mdx`, `_drafts/`) are excluded from the
   `posts` loader.
-- Schemas are declared with `astro/zod`.
+- Schemas are declared with `zod` (imported from the `zod` package).
 - Rendered entry access uses `getCollection` / `getEntry` / `render` from
   `astro:content`.
 

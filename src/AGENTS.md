@@ -31,9 +31,12 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 
 - `src/pages/` — Astro routes. One `.astro` per URL.
   - `index.astro` — home.
+  - `posts/index.astro` — all posts listing.
   - `posts/[...slug].astro` — individual blog posts.
+  - `categories/index.astro` — category directory.
   - `category/[category].astro` — category index pages.
-  - `authors/[author].astro` — author index pages.
+  - `authors/index.astro` — author directory.
+  - `authors/[author].astro` — author pages.
   - `rss.xml.js` — RSS feed.
   - `404.astro` — not found page.
 - `src/layouts/` — page shells.
