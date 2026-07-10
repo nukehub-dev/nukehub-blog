@@ -1,0 +1,16 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import { PostList } from "@components/blog/PostList";
+import { CategoryNav } from "@components/blog/CategoryNav";
+import { getPublishedPosts } from "@lib/posts";
+
+const posts = await getPublishedPosts();
+---
+
+<PageLayout title="All Posts" permalink="/posts">
+  <div class="mb-8 space-y-4">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">All Posts</h1>
+    <CategoryNav />
+  </div>
+  <PostList posts={posts} />
+</PageLayout>

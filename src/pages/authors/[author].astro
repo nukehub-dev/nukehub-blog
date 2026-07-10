@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import { AuthorBio } from "@components/blog/AuthorBio";
+import { PostList } from "@components/blog/PostList";
+import { getPostsByAuthor } from "@lib/posts";
+
+export async function getStaticPaths() {
+  const authors = await getCollection("authors");
+  return authors.map((author) => ({
+    params: { author: author.id },
+    props: { author },
+  }));
+}
+
+const { author } = Astro.props;
+const posts = await getPostsByAuthor(author.id);
+---
+
+<PageLayout
+  title={author.data.name}
+  description={author.data.bio}
+  permalink={`/authors/${author.id}`}
+>
+  <div class="mb-8 space-y-6">
+    <AuthorBio author={author} />
+    <h2 class="text-2xl font-semibold tracking-tight">
+      Posts by {author.data.name}
+    </h2>
+  </div>
+  <PostList posts={posts} />
+</PageLayout>

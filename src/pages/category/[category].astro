@@ -1,0 +1,32 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import { PostList } from "@components/blog/PostList";
+import { CategoryNav } from "@components/blog/CategoryNav";
+import { CATEGORY_SLUGS, getCategoryMeta } from "@lib/categories";
+import { getPostsByCategory } from "@lib/posts";
+
+export async function getStaticPaths() {
+  return CATEGORY_SLUGS.map((category) => ({
+    params: { category },
+  }));
+}
+
+const { category } = Astro.params;
+const meta = getCategoryMeta(category);
+const posts = await getPostsByCategory(category);
+---
+
+<PageLayout
+  title={meta?.label ?? category}
+  description={meta?.description}
+  permalink={`/category/${category}`}
+>
+  <div class="mb-8 space-y-4">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+      {meta?.label ?? category}
+    </h1>
+    {meta && <p class="text-lg text-muted-foreground">{meta.description}</p>}
+    <CategoryNav active={category} />
+  </div>
+  <PostList posts={posts} />
+</PageLayout>
