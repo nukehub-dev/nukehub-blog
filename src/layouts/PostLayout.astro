@@ -122,6 +122,7 @@ const articleJsonLd = {
             aspect="video"
             rounded="xl"
             className="w-full"
+            client:load
           />
         )
       }
@@ -136,7 +137,11 @@ const articleJsonLd = {
     {
       author && (
         <div class="mt-12">
-          <AuthorBio author={author} />
+          <AuthorBio
+            author={author}
+            href={`/authors/${author.id}`}
+            client:load
+          />
         </div>
       )
     }
@@ -149,7 +154,7 @@ const articleJsonLd = {
           </h2>
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {relatedPosts.map((relatedPost) => (
-              <PostCard post={relatedPost} />
+              <PostCard post={relatedPost} client:load />
             ))}
           </div>
         </aside>
