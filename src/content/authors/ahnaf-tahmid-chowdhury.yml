@@ -1,9 +1,17 @@
 name: Ahnaf Tahmid Chowdhury
-bio: Founder of NukeHub. Open-source nuclear engineer, educator, and community builder.
+bio: >
+  Founder of NukeHub. Open-source nuclear engineer, educator, and community
+  builder working to make nuclear engineering tools accessible to everyone.
 role: Founder
-avatar: /assets/images/nukehub.png
+organization: NukeHub
+location: Bangladesh
+email: tahmid@nukehub.org
+url: https://tahmid.pages.dev
+avatar: https://github.com/ahnaf-tahmid-chowdhury.png
 links:
   github: ahnaf-tahmid-chowdhury
   linkedin: ahnaf-tahmid-
   x: tahmid__
-  website: https://nukehub.org
+  bluesky: ahnaf-tahmid.bsky.social
+  researchgate: ahnaf-tahmid-chowdhury
+  orcid: 0000-0003-1070-5576

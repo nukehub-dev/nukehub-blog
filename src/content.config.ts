@@ -35,12 +35,21 @@ const authors = defineCollection({
     bio: z.string().optional(),
     avatar: z.string().optional(),
     role: z.string().optional(),
+    organization: z.string().optional(),
+    location: z.string().optional(),
+    email: z.string().email().optional(),
+    url: z.string().url().optional(),
     links: z
       .object({
         github: z.string().optional(),
+        gitlab: z.string().optional(),
         linkedin: z.string().optional(),
         x: z.string().optional(),
-        website: z.string().url().optional(),
+        bluesky: z.string().optional(),
+        mastodon: z.string().optional(),
+        youtube: z.string().optional(),
+        orcid: z.string().optional(),
+        researchgate: z.string().optional(),
       })
       .optional(),
   }),

@@ -104,12 +104,21 @@ Authors are YAML files in `src/content/authors/`:
 name: Author Name
 bio: A short bio.
 role: Contributor
+organization: NukeHub
+location: Canada
+email: author@nukehub.org
+url: https://nukehub.org
 avatar: /assets/images/author.png
 links:
   github: username
+  gitlab: username
   linkedin: username
   x: username
-  website: https://example.com
+  bluesky: username.bsky.social
+  mastodon: "@username@example.com"
+  youtube: "@channel"
+  orcid: 0000-0000-0000-0000
+  researchgate: username
 ```
 
 ### Drafts
@@ -147,4 +156,4 @@ GitHub Actions runs lint, format check, type check, and build on every push and 
 
 ## License
 
-ISC
+BSD 2-Clause. See [LICENSE](./LICENSE).

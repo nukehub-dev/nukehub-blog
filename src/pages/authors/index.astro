@@ -11,9 +11,7 @@ const authors = await getCollection("authors");
   <div class="space-y-6">
     {
       authors.map((author) => (
-        <a href={`/authors/${author.id}`} class="block">
-          <AuthorBio author={author} />
-        </a>
+        <AuthorBio author={author} href={`/authors/${author.id}`} />
       ))
     }
   </div>

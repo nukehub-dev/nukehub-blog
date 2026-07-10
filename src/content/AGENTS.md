@@ -40,7 +40,9 @@ additions/edits belong here.
     available in development.
 - `authors` (yml/yaml) — author profiles.
   - Required: `name`.
-  - Optional: `bio`, `avatar`, `role`, `links` (github, linkedin, x, website).
+  - Optional: `bio`, `avatar`, `role`, `organization`, `location`, `email`,
+    `url`, `links` (github, gitlab, linkedin, x, bluesky, mastodon, youtube,
+    orcid, researchgate).
 
 ### Adding a new collection
 
