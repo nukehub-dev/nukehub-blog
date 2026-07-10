@@ -6,6 +6,42 @@ import { Mail, Globe, MapPin, Building2 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Author } from "@lib/posts";
 
+/** Return a human-readable label for a social platform key. */
+function formatSocialLabel(platform: string): string {
+  const labels: Record<string, string> = {
+    github: "GitHub",
+    gitlab: "GitLab",
+    bitbucket: "Bitbucket",
+    linkedin: "LinkedIn",
+    x: "X",
+    facebook: "Facebook",
+    instagram: "Instagram",
+    youtube: "YouTube",
+    tiktok: "TikTok",
+    bluesky: "Bluesky",
+    mastodon: "Mastodon",
+    discord: "Discord",
+    telegram: "Telegram",
+    threads: "Threads",
+    twitch: "Twitch",
+    reddit: "Reddit",
+    whatsapp: "WhatsApp",
+    signal: "Signal",
+    stackoverflow: "Stack Overflow",
+    scholar: "Google Scholar",
+    orcid: "ORCID",
+    researchgate: "ResearchGate",
+    zotero: "Zotero",
+    medium: "Medium",
+    email: "Email",
+    url: "Website",
+  };
+  return (
+    labels[platform.toLowerCase()] ||
+    platform.charAt(0).toUpperCase() + platform.slice(1)
+  );
+}
+
 interface AuthorBioProps {
   author: Author;
   href?: string;
@@ -139,19 +175,22 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
 
         {socialEntries.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            {socialEntries.map(({ platform, url }) => (
-              <Tooltip key={platform} content={platform}>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                  aria-label={platform}
-                >
-                  <SocialIcon platform={platform} size={16} />
-                </a>
-              </Tooltip>
-            ))}
+            {socialEntries.map(({ platform, url }) => {
+              const label = formatSocialLabel(platform);
+              return (
+                <Tooltip key={platform} content={label}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                    aria-label={label}
+                  >
+                    <SocialIcon platform={platform} size={16} />
+                  </a>
+                </Tooltip>
+              );
+            })}
           </div>
         )}
       </div>
