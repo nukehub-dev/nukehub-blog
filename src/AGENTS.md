@@ -44,8 +44,8 @@ All files under `src/` except `src/content/` (own NAD). Also owns
     SEO meta, RSS alternate link, theme init script, skip link, header/footer
     frame, and scroll-to-top.
   - `PageLayout.astro` — generic prose-content wrapper over BaseLayout.
-  - `PostLayout.astro` — blog-post wrapper: cover image, title, meta, author,
-    tags, related posts.
+  - `PostLayout.astro` — blog-post wrapper: cover image, title, meta, author(s),
+    tags, table of contents, references, related posts.
 - `src/components/ui/` — visual primitives copied from `nukehub.org`. Do not
   edit their behavior; update import aliases only.
 - `src/components/layout/` — site frame: `Header`, `Footer`, `Container`.
@@ -54,8 +54,18 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `CommandPaletteManager`, `GlassContextMenu`, `GlobalContextMenu`,
   `MagneticButton`. Also `decorations/FloatingParticles`.
 - `src/components/blog/` — blog-specific components: `PostCard`, `PostList`,
-  `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, etc.
+  `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, `TableOfContents`,
+  `NewsletterSignup`, etc.
+- `src/components/mdx/` — MDX shortcodes available inside post bodies:
+  `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
+
+### Environment variables
+
+Public env vars are bundled into the static site. `PUBLIC_API_URL` and
+`PUBLIC_TURNSTILE_SITE_KEY` are required for the newsletter signup form.
+`PUBLIC_CF_ANALYTICS_TOKEN` is optional.
+
 - `src/styles/global.css` — Tailwind v4 entry and theme tokens.
 - `src/lib/` — shared utilities.
   - `utils.ts` — `cn()` helper.

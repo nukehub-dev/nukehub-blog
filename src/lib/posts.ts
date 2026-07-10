@@ -34,7 +34,9 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
 
 export async function getPostsByAuthor(authorId: string): Promise<Post[]> {
   const posts = await getPublishedPosts();
-  return posts.filter((p) => p.data.author === authorId);
+  return posts.filter(
+    (p) => p.data.author === authorId || p.data.coAuthors?.includes(authorId),
+  );
 }
 
 export function getReadingTime(body: string): number {

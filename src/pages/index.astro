@@ -4,6 +4,7 @@ import { Container } from "@components/layout/Container";
 import PostHero from "@components/blog/PostHero.astro";
 import { PostList } from "@components/blog/PostList";
 import { CategoryNav } from "@components/blog/CategoryNav";
+import { NewsletterSignup } from "@components/blog/NewsletterSignup";
 import { MagneticButton } from "@components/shared/MagneticButton";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import { getPublishedPosts, getFeaturedPosts } from "@lib/posts";
@@ -42,6 +43,15 @@ const latestPosts = posts.slice(0, 6);
           >
             Subscribe via RSS
           </a>
+        </div>
+
+        <div class="mx-auto mt-10 max-w-lg">
+          <NewsletterSignup
+            title="Stay in the loop"
+            description="Get new posts delivered to your inbox. No spam, unsubscribe anytime."
+            variant="card"
+            client:load
+          />
         </div>
       </div>
     </Container>

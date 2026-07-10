@@ -17,11 +17,23 @@ const posts = defineCollection({
       "project-updates",
     ]),
     author: z.string(),
+    coAuthors: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     coverImage: z.string().optional(),
     canonicalUrl: z.string().url().optional(),
+    references: z
+      .array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          url: z.string().url(),
+          source: z.string().optional(),
+          date: z.string().optional(),
+        }),
+      )
+      .default([]),
   }),
 });
 

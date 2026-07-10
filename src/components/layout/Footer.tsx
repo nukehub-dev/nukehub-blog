@@ -1,6 +1,7 @@
 import { footerColumns, footerLegal, socialLinks } from "@data/footer";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
+import { NewsletterSignup } from "@components/blog/NewsletterSignup";
 import { ArrowUpRight } from "lucide-react";
 
 export function Footer() {
@@ -25,20 +26,14 @@ export function Footer() {
               empowering open-source nuclear engineering.
             </p>
 
-            {/* Social icons */}
-            <div className="mt-6 flex items-center gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/20"
-                  aria-label={social.name}
-                >
-                  <BrandIcon name={social.name} size={18} />
-                </a>
-              ))}
+            {/* Newsletter */}
+            <div className="mt-6">
+              <NewsletterSignup
+                title="Subscribe to newsletter"
+                description="Weekly roundups of new posts and community updates."
+                variant="compact"
+                layout="button"
+              />
             </div>
           </div>
 
@@ -93,20 +88,38 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {year} NukeHub. All rights reserved.
           </p>
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            {footerLegal.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target={link.newpage ? "_blank" : undefined}
-                rel={link.newpage ? "noopener noreferrer" : undefined}
-                className="group relative text-xs text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {link.title}
-                <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </nav>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {/* Social icons */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+                  aria-label={social.name}
+                >
+                  <BrandIcon name={social.name} size={16} />
+                </a>
+              ))}
+            </div>
+
+            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+              {footerLegal.map((link) => (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target={link.newpage ? "_blank" : undefined}
+                  rel={link.newpage ? "noopener noreferrer" : undefined}
+                  className="group relative text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                  <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+            </nav>
+          </div>
         </div>
       </div>
     </footer>

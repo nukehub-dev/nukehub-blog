@@ -87,22 +87,15 @@ export function Image({
         )}
       </AnimatePresence>
 
-      {/* Actual image */}
+      {/* Actual image — always rendered; shimmer covers it until loaded */}
       {status !== "error" && (
         <img
           ref={imgRef}
           src={src}
           alt={alt}
-          width={imgProps.width ?? "100%"}
-          height={imgProps.height ?? "100%"}
           loading={imgProps.loading ?? "lazy"}
           decoding={imgProps.decoding ?? "async"}
-          className={cn(
-            "h-full w-full object-cover",
-            status === "loaded" ? "opacity-100" : "opacity-0",
-            "transition-opacity duration-300",
-            className,
-          )}
+          className={cn("h-full w-full object-cover", className)}
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           {...imgProps}

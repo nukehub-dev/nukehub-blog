@@ -65,7 +65,7 @@ npm run build && npm run preview
 
 Add an MDX file to `src/content/posts/`:
 
-```mdx
+````mdx
 ---
 title: Your Post Title
 description: A short summary of the post.
@@ -78,7 +78,30 @@ draft: false
 ---
 
 Your post content here.
+
+You can also use the built-in MDX components:
+
+```mdx
+<YouTube id="dQw4w9WgXcQ" title="Demo" />
+
+<Odysee url="https://odysee.com/$/embed/name/claimId" title="Demo" />
+
+<Video src="/assets/videos/demo.mp4" title="Demo" />
+
+<ImageFigure
+  src="/assets/images/diagram.png"
+  alt="Reactor diagram"
+  caption="Figure 1: Cross-section of a PWR fuel assembly."
+/>
+
+<Callout type="tip">
+  Always validate your cross sections against a reference benchmark.
+</Callout>
+
+<Citation id="openmc2023" /> cross sections should be validated against
+benchmark data.
 ```
+````
 
 ### Frontmatter schema
 
@@ -89,12 +112,51 @@ Your post content here.
 | `publishedDate` | Yes      | date     | `YYYY-MM-DD`                                                            |
 | `updatedDate`   | No       | date     | `YYYY-MM-DD`                                                            |
 | `category`      | Yes      | enum     | `news`, `tutorials`, `nuclear-industry`, `community`, `project-updates` |
-| `author`        | Yes      | string   | ID of an author in `src/content/authors/`                               |
+| `author`        | Yes      | string   | ID of the primary author in `src/content/authors/`                      |
+| `coAuthors`     | No       | string[] | IDs of additional authors. Default `[]`                                 |
 | `tags`          | No       | string[] | Default `[]`                                                            |
 | `featured`      | No       | boolean  | Default `false`                                                         |
 | `draft`         | No       | boolean  | Default `false`; excluded from production builds                        |
 | `coverImage`    | No       | string   | Path to an image in `public/`                                           |
 | `canonicalUrl`  | No       | string   | If the post was originally published elsewhere                          |
+| `references`    | No       | object[] | Citations rendered at the end of the post. See below.                   |
+
+### References
+
+Add a `references` array to the frontmatter to cite external sources. Each
+reference needs a unique `id` that matches `<Citation id="..." />` used in the
+post body.
+
+```yaml
+references:
+  - id: openmc2023
+    title: OpenMC User's Guide
+    url: https://docs.openmc.org/
+    source: OpenMC Development Team
+    date: "2023"
+```
+
+Use the citation component in MDX:
+
+```mdx
+OpenMC uses continuous-energy nuclear data<Citation id="openmc2023" />.
+```
+
+The references section is rendered automatically at the bottom of the post.
+
+### Newsletter
+
+The blog uses the NukeHub API server for email subscriptions. To enable the
+signup form, set these environment variables:
+
+```bash
+PUBLIC_API_URL=http://localhost:3000
+PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+```
+
+The API endpoint is `POST ${PUBLIC_API_URL}/newsletter` with JSON body
+`{ email, turnstileToken }`. The API server stores subscribers in SQLite and
+exposes admin endpoints for listing and exporting them.
 
 ### Authors
 
@@ -131,6 +193,7 @@ Drafts live in `src/content/posts/_drafts/` and are excluded from the content lo
 - `src/layouts/` — page shells (`BaseLayout`, `PageLayout`, `PostLayout`)
 - `src/components/ui/` — UI primitives copied from `nukehub.org`
 - `src/components/blog/` — blog-specific components
+- `src/components/mdx/` — MDX shortcodes available inside posts
 - `src/content/` — MDX posts and YAML authors
 - `src/lib/` — shared utilities
 - `src/data/` — static site data

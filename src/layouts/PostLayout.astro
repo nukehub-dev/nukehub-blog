@@ -8,8 +8,12 @@ import { AuthorBio } from "@components/blog/AuthorBio";
 import { PostCard } from "@components/blog/PostCard";
 import PostContent from "@components/blog/PostContent.astro";
 import { ReadingProgress } from "@components/blog/ReadingProgress";
+import { TableOfContents } from "@components/blog/TableOfContents";
 import { getCategoryLabel } from "@lib/categories";
 import { getReadingTime, getRelatedPosts, type Post } from "@lib/posts";
+import type { Author } from "@lib/posts";
+import { MDXComponents } from "@components/mdx/MDXComponents";
+import { References } from "@components/mdx/References";
 import { SITE } from "@data/site";
 
 interface Props {
@@ -17,7 +21,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const {
   title,
   description,
@@ -25,12 +29,19 @@ const {
   updatedDate,
   category,
   author: authorId,
+  coAuthors: coAuthorIds,
   tags,
   coverImage,
   canonicalUrl,
+  references,
 } = post.data;
 
-const author = await getEntry("authors", authorId);
+const authorEntries = await Promise.all(
+  [authorId, ...(coAuthorIds ?? [])]
+    .filter(Boolean)
+    .map((id) => getEntry("authors", id)),
+);
+const authors = authorEntries.filter((a): a is Author => Boolean(a));
 const allPosts = await getCollection("posts");
 const relatedPosts = getRelatedPosts(post, allPosts, 3);
 const readingTime = getReadingTime(post.body ?? "");
@@ -47,13 +58,11 @@ const articleJsonLd = {
   image: `${SITE.url}${pageImage}`,
   datePublished: publishedDate.toISOString(),
   dateModified: updatedDate?.toISOString() ?? publishedDate.toISOString(),
-  author: author
-    ? {
-        "@type": "Person",
-        name: author.data.name,
-        url: `${SITE.url}/authors/${author.id}`,
-      }
-    : undefined,
+  author: authors.map((a) => ({
+    "@type": "Person",
+    name: a.data.name,
+    url: `${SITE.url}/authors/${a.id}`,
+  })),
   keywords: tags.join(", "),
 };
 ---
@@ -67,85 +76,115 @@ const articleJsonLd = {
 >
   <ReadingProgress client:idle />
 
-  <article
-    id="article-content"
-    class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8"
-  >
-    <header class="space-y-6">
-      <div class="flex flex-wrap items-center gap-2">
-        <Badge variant="default">{getCategoryLabel(category)}</Badge>
-        {tags.map((tag) => <Badge variant="ghost">{tag}</Badge>)}
-      </div>
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-12 lg:flex-row lg:justify-center">
+      <article id="article-content" class="w-full max-w-3xl">
+        <header class="space-y-6">
+          <div class="flex flex-wrap items-center gap-2">
+            <Badge variant="default">{getCategoryLabel(category)}</Badge>
+            {tags.map((tag) => <Badge variant="ghost">{tag}</Badge>)}
+          </div>
 
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-        {title}
-      </h1>
+          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+            {title}
+          </h1>
 
-      <p class="text-lg text-muted-foreground">{description}</p>
+          <p class="text-lg text-muted-foreground">{description}</p>
 
-      <div
-        class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground"
-      >
-        <time datetime={publishedDate.toISOString()}>
-          {format(publishedDate, "MMMM d, yyyy")}
-        </time>
-        {
-          updatedDate && (
-            <span>
-              Updated{" "}
-              <time datetime={updatedDate.toISOString()}>
-                {format(updatedDate, "MMMM d, yyyy")}
-              </time>
-            </span>
-          )
-        }
-        <span>{readingTime} min read</span>
-        {
-          canonicalUrl && (
-            <a
-              href={canonicalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-primary hover:underline"
-            >
-              Originally published
-            </a>
-          )
-        }
-      </div>
+          <div
+            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground"
+          >
+            <time datetime={publishedDate.toISOString()}>
+              {format(publishedDate, "MMMM d, yyyy")}
+            </time>
+            {
+              updatedDate && (
+                <span>
+                  Updated{" "}
+                  <time datetime={updatedDate.toISOString()}>
+                    {format(updatedDate, "MMMM d, yyyy")}
+                  </time>
+                </span>
+              )
+            }
+            <span>{readingTime} min read</span>
+            {
+              canonicalUrl && (
+                <a
+                  href={canonicalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:underline"
+                >
+                  Originally published
+                </a>
+              )
+            }
+          </div>
 
-      {
-        coverImage && (
-          <Image
-            src={coverImage}
-            alt={title}
-            aspect="video"
-            rounded="xl"
-            className="w-full"
-            client:load
-          />
-        )
-      }
-    </header>
+          {
+            authors.length > 0 && (
+              <div class="flex flex-wrap items-center gap-3">
+                {authors.map((a) => (
+                  <a
+                    href={`/authors/${a.id}`}
+                    class="group inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/50 px-3 py-1.5 text-sm transition-colors hover:border-primary/30 hover:bg-card"
+                  >
+                    {a.data.avatar && (
+                      <img
+                        src={a.data.avatar}
+                        alt={a.data.name}
+                        class="h-6 w-6 rounded-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
+                    <span class="font-medium text-foreground group-hover:text-primary">
+                      {a.data.name}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )
+          }
 
-    <div class="mt-10">
-      <PostContent>
-        <Content />
-      </PostContent>
-    </div>
+          {
+            coverImage && (
+              <Image
+                src={coverImage}
+                alt={title}
+                aspect="video"
+                rounded="xl"
+                className="w-full"
+                client:load
+              />
+            )
+          }
+        </header>
 
-    {
-      author && (
-        <div class="mt-12">
-          <AuthorBio
-            author={author}
-            href={`/authors/${author.id}`}
-            client:load
-          />
+        <div class="mt-10">
+          <PostContent>
+            <Content components={MDXComponents} />
+          </PostContent>
         </div>
-      )
-    }
-  </article>
+
+        {
+          authors.length > 0 && (
+            <div class="mt-12 space-y-6">
+              {authors.map((a) => (
+                <AuthorBio author={a} href={`/authors/${a.id}`} client:load />
+              ))}
+            </div>
+          )
+        }
+
+        {references.length > 0 && <References references={references} />}
+      </article>
+
+      <div class="hidden lg:block lg:w-56 lg:self-start lg:sticky lg:top-24">
+        <TableOfContents headings={headings} client:load />
+      </div>
+    </div>
+  </div>
 
   {
     relatedPosts.length > 0 && (
