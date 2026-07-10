@@ -1,0 +1,62 @@
+---
+import { ImageFigure as ImageFigureReact } from "./ImageFigure";
+import sharp from "sharp";
+import path from "node:path";
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  className?: string;
+  /** Override the detected aspect ratio, e.g. "16/9" or "4/3". */
+  aspectRatio?: string;
+  /** Object-fit behavior; defaults to cover. */
+  fit?: "cover" | "contain";
+  /** Wrapper border radius; defaults to none. */
+  rounded?: "none" | "sm" | "md" | "lg" | "xl";
+  /** Remove the muted placeholder background. */
+  transparent?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  className,
+  aspectRatio: authorAspectRatio,
+  fit,
+  rounded,
+  transparent,
+} = Astro.props;
+
+// Resolve the on-disk path from the public URL and read the image's aspect
+// ratio so the figure can reserve the exact space without cropping or layout
+// shift. Falls back to no ratio if the file cannot be read or if the author
+// already supplied a value.
+let detectedAspectRatio: string | undefined;
+if (!authorAspectRatio) {
+  const filePath = path.join(process.cwd(), "public", src);
+  try {
+    const metadata = await sharp(filePath).metadata();
+    if (metadata.width && metadata.height) {
+      detectedAspectRatio = `${metadata.width} / ${metadata.height}`;
+    }
+  } catch {
+    detectedAspectRatio = undefined;
+  }
+}
+
+const aspectRatio = authorAspectRatio ?? detectedAspectRatio;
+---
+
+<ImageFigureReact
+  src={src}
+  alt={alt}
+  caption={caption}
+  className={className}
+  aspectRatio={aspectRatio}
+  fit={fit}
+  rounded={rounded}
+  transparent={transparent}
+  client:load
+/>

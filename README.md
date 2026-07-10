@@ -81,6 +81,10 @@ Your post content here.
 
 You can also use the built-in MDX components:
 
+`ImageFigure` automatically detects the image's aspect ratio at build time. You
+can override it with `aspectRatio`, or change the fit with `fit`, the corner
+style with `rounded`, and the placeholder background with `transparent`.
+
 ```mdx
 <YouTube id="dQw4w9WgXcQ" title="Demo" />
 
@@ -92,6 +96,18 @@ You can also use the built-in MDX components:
   src="/assets/images/diagram.png"
   alt="Reactor diagram"
   caption="Figure 1: Cross-section of a PWR fuel assembly."
+/>
+
+<!-- Optional overrides -->
+
+<ImageFigure
+  src="/assets/images/diagram.png"
+  alt="Reactor diagram"
+  caption="Figure 2: Optional custom sizing."
+  aspectRatio="4/3"
+  fit="contain"
+  rounded="lg"
+  transparent={true}
 />
 
 <Callout type="tip">

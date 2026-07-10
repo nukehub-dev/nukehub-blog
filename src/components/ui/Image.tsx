@@ -15,6 +15,14 @@ interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fit?: "cover" | "contain" | "fill" | "none";
   /** Remove the default muted background (useful for transparent images). */
   transparent?: boolean;
+  /**
+   * When false, the image renders at its natural aspect ratio using `w-full h-auto`
+   * instead of filling a fixed-aspect container. Useful for content figures whose
+   * dimensions should be preserved.
+   */
+  fill?: boolean;
+  /** Optional inline styles for the wrapper element. */
+  wrapperStyle?: React.CSSProperties;
 }
 
 export function Image({
@@ -27,6 +35,8 @@ export function Image({
   rounded = "lg",
   fit = "cover",
   transparent = false,
+  fill = true,
+  wrapperStyle,
   ...imgProps
 }: ImageProps) {
   const [status, setStatus] = React.useState<"loading" | "loaded" | "error">(
@@ -72,10 +82,12 @@ export function Image({
       className={cn(
         "relative overflow-hidden",
         transparent ? "bg-transparent" : "bg-muted",
-        aspectClass[aspect],
+        fill ? aspectClass[aspect] : "h-auto w-full",
+        !fill && status === "loading" && "min-h-[16rem]",
         roundedClass[rounded],
         wrapperClassName,
       )}
+      style={wrapperStyle}
     >
       {/* Shimmer placeholder — only shown when truly loading */}
       <AnimatePresence>
@@ -103,7 +115,11 @@ export function Image({
           alt={alt}
           loading={imgProps.loading ?? "lazy"}
           decoding={imgProps.decoding ?? "async"}
-          className={cn("h-full w-full", `object-${fit}`, className)}
+          className={cn(
+            fill ? "h-full w-full" : "h-auto w-full",
+            `object-${fit}`,
+            className,
+          )}
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           {...imgProps}
