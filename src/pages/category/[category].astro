@@ -28,5 +28,5 @@ const posts = await getPostsByCategory(category);
     {meta && <p class="text-lg text-muted-foreground">{meta.description}</p>}
     <CategoryNav active={category} />
   </div>
-  <PostList posts={posts} />
+  <PostList posts={posts} client:load />
 </PageLayout>

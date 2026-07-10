@@ -113,7 +113,7 @@ const latestPosts = posts.slice(0, 6);
           View all
         </a>
       </div>
-      <PostList posts={latestPosts} />
+      <PostList posts={latestPosts} client:load />
     </Container>
   </section>
 </BaseLayout>
