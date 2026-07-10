@@ -5,6 +5,8 @@ import { Badge } from "@components/ui/Badge";
 import { Image } from "@components/ui/Image";
 import { getCategoryLabel } from "@lib/categories";
 import type { Post } from "@lib/posts";
+import sharp from "sharp";
+import path from "node:path";
 
 interface Props {
   post: Post;
@@ -24,6 +26,21 @@ const {
 
 const fit = coverImageFit ?? "cover";
 const isContain = fit === "contain";
+
+// Read the cover image dimensions at build time so contained covers can use the
+// image's natural aspect ratio instead of being forced into 16:9.
+let coverAspectRatio: string | undefined;
+if (coverImage) {
+  const filePath = path.join(process.cwd(), "public", coverImage);
+  try {
+    const metadata = await sharp(filePath).metadata();
+    if (metadata.width && metadata.height) {
+      coverAspectRatio = `${metadata.width} / ${metadata.height}`;
+    }
+  } catch {
+    coverAspectRatio = undefined;
+  }
+}
 ---
 
 <section
@@ -36,10 +53,15 @@ const isContain = fit === "contain";
           class={cn(
             "relative aspect-video overflow-hidden lg:aspect-auto",
             isContain
-              ? "flex items-center justify-center p-6 sm:p-10 lg:p-14"
+              ? "flex items-center justify-center p-2 sm:p-4"
               : "bg-muted",
             !coverImageTransparent && isContain && "bg-muted",
           )}
+          style={
+            isContain && coverAspectRatio
+              ? { aspectRatio: coverAspectRatio }
+              : undefined
+          }
         >
           <Image
             src={coverImage}
@@ -49,10 +71,7 @@ const isContain = fit === "contain";
             fit={fit}
             transparent={coverImageTransparent}
             loading="eager"
-            wrapperClassName={cn(
-              "h-full w-full",
-              isContain && "max-w-xs sm:max-w-sm lg:max-w-md",
-            )}
+            wrapperClassName="h-full w-full"
             client:load
           />
         </div>

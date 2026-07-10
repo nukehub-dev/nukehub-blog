@@ -16,6 +16,8 @@ import type { Author } from "@lib/posts";
 import { MDXComponents } from "@components/mdx/MDXComponents";
 import { References } from "@components/mdx/References";
 import { SITE } from "@data/site";
+import sharp from "sharp";
+import path from "node:path";
 
 interface Props {
   post: Post;
@@ -41,6 +43,21 @@ const {
 
 const fit = coverImageFit ?? "cover";
 const isContain = fit === "contain";
+
+// Read the cover image dimensions at build time so contained covers can use the
+// image's natural aspect ratio instead of being forced into a fixed ratio.
+let coverAspectRatio: string | undefined;
+if (coverImage) {
+  const filePath = path.join(process.cwd(), "public", coverImage);
+  try {
+    const metadata = await sharp(filePath).metadata();
+    if (metadata.width && metadata.height) {
+      coverAspectRatio = `${metadata.width} / ${metadata.height}`;
+    }
+  } catch {
+    coverAspectRatio = undefined;
+  }
+}
 
 const authorEntries = await Promise.all(
   [authorId, ...(coAuthorIds ?? [])]
@@ -159,23 +176,25 @@ const articleJsonLd = {
                 class={cn(
                   "overflow-hidden rounded-xl",
                   isContain
-                    ? "flex items-center justify-center p-6 sm:p-10"
+                    ? "flex items-center justify-center"
                     : "aspect-video bg-muted",
                   isContain && !coverImageTransparent && "bg-muted",
                 )}
+                style={
+                  isContain && coverAspectRatio
+                    ? { aspectRatio: coverAspectRatio }
+                    : undefined
+                }
               >
                 <Image
                   src={coverImage}
                   alt={title}
-                  aspect={isContain ? "square" : "video"}
+                  aspect="auto"
                   rounded="xl"
                   fit={fit}
                   transparent={coverImageTransparent}
                   loading="eager"
-                  wrapperClassName={cn(
-                    "w-full",
-                    isContain && "max-w-sm sm:max-w-md lg:max-w-lg",
-                  )}
+                  wrapperClassName="w-full"
                   client:load
                 />
               </div>
