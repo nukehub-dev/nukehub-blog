@@ -17,8 +17,8 @@ child `AGENTS.md` files listed in the Child NAD Index.
 
 - `AGENTS.md` files are binding work contracts for their subtrees.
 - Work products, source materials, instructions, records, assets, and durable
-docs must stay understandable from the nearest applicable `AGENTS.md` plus
-every parent `AGENTS.md` above it.
+  docs must stay understandable from the nearest applicable `AGENTS.md` plus
+  every parent `AGENTS.md` above it.
 
 ### Read Before Editing
 
@@ -27,11 +27,11 @@ every parent `AGENTS.md` above it.
 3. Walk from the repository root to each target path.
 4. Read every `AGENTS.md` found along each route.
 5. If a parent `AGENTS.md` lists a child `AGENTS.md` whose scope contains the
-path, read that child and continue from there.
+   path, read that child and continue from there.
 6. Use the nearest `AGENTS.md` as the local contract and parent docs for
-repo-wide rules.
+   repo-wide rules.
 7. If docs conflict, the closer doc controls local work details, but no child
-doc may weaken NAD.
+   doc may weaken NAD.
 
 ### Update After Editing
 
@@ -42,9 +42,9 @@ Update the closest owning `AGENTS.md` when a change affects:
 - purpose, scope, ownership, or responsibilities
 - durable structure, contracts, workflows, or operating rules
 - required inputs, outputs, permissions, constraints, side effects, or
-artifacts
+  artifacts
 - user preferences about behavior, communication, process, organization, or
-quality
+  quality
 - `AGENTS.md` creation, deletion, move, rename, or index contents
 
 Update parent docs when parent-level structure, ownership, workflow, or child
@@ -56,11 +56,11 @@ happen.
 ## Hierarchy
 
 - Root `AGENTS.md` is the NAD rail: project-wide instructions, global
-preferences, durable workflow rules, and the top-level Child NAD Index.
+  preferences, durable workflow rules, and the top-level Child NAD Index.
 - Child `AGENTS.md` files own domain-specific instructions and their own Child
-NAD Index.
+  NAD Index.
 - Each parent explains what its direct children cover and what stays owned by
-the parent.
+  the parent.
 - The closer a doc is to the work, the more specific and practical it must be.
 
 ## Child Doc Shape
@@ -85,10 +85,10 @@ Default section order:
 - Put broad rules in parent docs and concrete details in child docs.
 - Prefer direct bullets with explicit names.
 - Do not duplicate rules across many files unless each scope needs a local
-version.
+  version.
 - Delete stale notes instead of explaining history.
 - Trim obvious statements, repeated rules, misplaced detail, and warnings for
-risks that no longer exist.
+  risks that no longer exist.
 
 ## Closeout
 
@@ -126,7 +126,7 @@ Notes:
 
 - `npm run lint` must end with `0 errors`.
 - Do not edit generated files. `dist/`, `.astro/`, `node_modules/.vite/` and
-other build outputs are regenerated. Change source only.
+  other build outputs are regenerated. Change source only.
 - `.wrangler/` is gitignored and eslint-ignored.
 
 ## Architecture pointer
@@ -137,9 +137,9 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `src/pages/` — Astro routes: home, posts, categories, authors, RSS, 404.
 - `src/layouts/` — page shells: `BaseLayout`, `PageLayout`, `PostLayout`.
 - `src/components/` — shared UI primitives, layout chrome, and blog-specific
-components.
+  components.
 - `src/content/` — Astro content collections: `posts` and `authors`. See
-`src/content/AGENTS.md`.
+  `src/content/AGENTS.md`.
 - `src/lib/` — shared TypeScript utilities, theme engine, and post helpers.
 - `src/data/` — typed static data: nav, footer, site metadata.
 - `src/styles/` — Tailwind v4 theme entrypoint.
@@ -153,10 +153,10 @@ The NukeHub flagship site (`nukehub.org`) maintains a custom UI library. This
 blog reuses those primitives verbatim wherever possible:
 
 - Copy UI primitives from `nukehub.org/src/components/ui/` unchanged except for
-import aliases.
+  import aliases.
 - Copy shared utilities from `nukehub.org/src/lib/` unchanged.
 - Adapt layout components (`Header`, `Footer`) only to fit the simpler blog
-context.
+  context.
 - Blog-specific components live in `src/components/blog/`.
 
 ## Deployment (Cloudflare Pages)
@@ -181,6 +181,6 @@ browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
 ## Child NAD Index
 
 - `src/AGENTS.md` — Astro site source: `pages/`, `layouts/`, `components/`,
-`styles/`, `data/`, `lib/`, plus Astro config and project path aliases.
+  `styles/`, `data/`, `lib/`, plus Astro config and project path aliases.
 - `src/content/AGENTS.md` — Astro content collections and `content.config.ts`
-schemas.
+  schemas.

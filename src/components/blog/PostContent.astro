@@ -1,0 +1,21 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "prose prose-lg max-w-none dark:prose-invert",
+    "prose-headings:tracking-tight prose-headings:font-semibold",
+    "prose-a:text-primary hover:prose-a:underline",
+    "prose-code:rounded-md prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:text-sm",
+    "prose-pre:rounded-xl prose-pre:bg-muted",
+    "prose-img:rounded-xl",
+    className,
+  ]}
+>
+  <slot />
+</div>

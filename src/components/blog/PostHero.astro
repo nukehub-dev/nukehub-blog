@@ -1,0 +1,52 @@
+---
+import { format } from "date-fns";
+import { Badge } from "@components/ui/Badge";
+import { Image } from "@components/ui/Image";
+import { getCategoryLabel } from "@lib/categories";
+import type { Post } from "@lib/posts";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, publishedDate, category, coverImage, tags } =
+  post.data;
+---
+
+<section
+  class="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm"
+>
+  <div class="grid lg:grid-cols-2">
+    {
+      coverImage && (
+        <div class="relative aspect-video lg:aspect-auto">
+          <Image
+            src={coverImage}
+            alt={title}
+            aspect="auto"
+            rounded="none"
+            className="absolute inset-0 h-full w-full"
+          />
+        </div>
+      )
+    }
+    <div class="flex flex-col justify-center p-6 sm:p-10">
+      <div class="flex flex-wrap items-center gap-2">
+        <Badge variant="default">{getCategoryLabel(category)}</Badge>
+        {tags.slice(0, 3).map((tag) => <Badge variant="ghost">{tag}</Badge>)}
+      </div>
+      <h1 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+        <a href={`/posts/${post.id}`} class="hover:underline">
+          {title}
+        </a>
+      </h1>
+      <p class="mt-4 text-lg text-muted-foreground">{description}</p>
+      <div class="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <time datetime={publishedDate.toISOString()}>
+          {format(publishedDate, "MMMM d, yyyy")}
+        </time>
+      </div>
+    </div>
+  </div>
+</section>
