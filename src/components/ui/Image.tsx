@@ -107,7 +107,7 @@ export function Image({
         )}
       </AnimatePresence>
 
-      {/* Actual image — always rendered; shimmer covers it until loaded */}
+      {/* Actual image — hidden until loaded so its alt text doesn't show behind the shimmer */}
       {status !== "error" && (
         <img
           ref={imgRef}
@@ -118,6 +118,8 @@ export function Image({
           className={cn(
             fill ? "h-full w-full" : "h-auto w-full",
             `object-${fit}`,
+            status === "loaded" ? "opacity-100" : "opacity-0",
+            "transition-opacity duration-300",
             className,
           )}
           onLoad={() => setStatus("loaded")}
