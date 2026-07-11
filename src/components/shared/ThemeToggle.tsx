@@ -14,7 +14,7 @@ import {
   type AccentColor,
   resolveTheme,
 } from "@lib/theme";
-import { Sun, Moon, Monitor, Check, Palette } from "lucide-react";
+import { Sun, Moon, Monitor, Check } from "lucide-react";
 import { Tooltip } from "@components/ui/Tooltip";
 
 const options: {

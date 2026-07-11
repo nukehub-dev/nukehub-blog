@@ -8,6 +8,7 @@ import {
   Tags,
   Users,
   ExternalLink,
+  MessagesSquare,
 } from "lucide-react";
 
 export interface FooterLink {
@@ -65,16 +66,22 @@ export const footerColumns: FooterColumn[] = [
         icon: Mail,
       },
       {
-        title: "GitHub",
-        url: "https://github.com/nukehub-dev",
+        title: "NukeTalk",
+        url: "https://talk.nukehub.org",
         newpage: true,
-        brandIcon: "github",
+        icon: MessagesSquare,
       },
       {
         title: "LinkedIn",
         url: "https://www.linkedin.com/company/nukehub",
         newpage: true,
         brandIcon: "linkedin",
+      },
+      {
+        title: "GitHub",
+        url: "https://github.com/nukehub-dev",
+        newpage: true,
+        brandIcon: "github",
       },
     ],
   },
@@ -84,6 +91,10 @@ export const footerLegal: FooterLink[] = [
   {
     title: "RSS Feed",
     url: "/rss.xml",
+  },
+  {
+    title: "Sitemap",
+    url: "/sitemap-index.xml",
   },
   {
     title: "Privacy",
