@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "@lib/utils";
 import { navItems } from "@data/nav";
+import { SITE } from "@data/site";
 import { Logo } from "@components/ui/Logo";
 import { ThemeToggle } from "@components/shared/ThemeToggle";
 import { Menu, X, Search } from "lucide-react";
@@ -17,7 +18,7 @@ export function Header() {
           className="flex items-center gap-2 text-lg font-semibold text-foreground transition-opacity hover:opacity-80"
         >
           <Logo size={24} className="text-primary" />
-          <span>NukeHub Blog</span>
+          <span>{SITE.logoText}</span>
         </a>
 
         {/* Desktop Nav */}

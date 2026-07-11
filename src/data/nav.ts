@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { Home, FileText, Tags, Users, Rss, ExternalLink } from "lucide-react";
+import { Home, FileText, Tags, Users, ExternalLink } from "lucide-react";
 
 export interface NavItem {
   title: string;
@@ -13,7 +13,6 @@ export const navItems: NavItem[] = [
   { title: "Posts", icon: FileText, url: "/posts" },
   { title: "Categories", icon: Tags, url: "/categories" },
   { title: "Authors", icon: Users, url: "/authors" },
-  { title: "RSS", icon: Rss, url: "/rss.xml" },
   {
     title: "Main Site",
     icon: ExternalLink,

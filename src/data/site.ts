@@ -1,13 +1,13 @@
 export const SITE = {
-  name: "NukeHub Blog",
+  name: "NukeBlog",
   tagline: "News, tutorials, and updates from the NukeHub community.",
   description:
-    "The NukeHub Blog publishes open-source nuclear engineering news, tutorials, project updates, and community spotlights.",
+    "NukeBlog publishes open-source nuclear engineering news, tutorials, project updates, and community spotlights from NukeHub.",
   url: "https://blog.nukehub.org",
   domain: "blog.nukehub.org",
   mainSiteUrl: "https://nukehub.org",
   mainSiteName: "NukeHub",
-  logoText: "NukeHub Blog",
+  logoText: "NukeBlog",
   language: "en",
   locale: "en_US",
   twitterHandle: "@nukehub_org",

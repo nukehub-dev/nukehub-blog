@@ -1,124 +1,162 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Container } from "@components/layout/Container";
 import PostHero from "@components/blog/PostHero.astro";
 import { PostList } from "@components/blog/PostList";
-import { CategoryNav } from "@components/blog/CategoryNav";
+import { CategoryCard } from "@components/blog/CategoryCard";
 import { NewsletterSignup } from "@components/blog/NewsletterSignup";
 import { MagneticButton } from "@components/shared/MagneticButton";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import { getPublishedPosts, getFeaturedPosts } from "@lib/posts";
+import { CATEGORIES } from "@lib/categories";
 import { SITE } from "@data/site";
 
 const posts = await getPublishedPosts();
 const featuredPosts = await getFeaturedPosts(1);
 const featuredPost = featuredPosts[0] ?? posts[0];
 const latestPosts = posts.slice(0, 6);
+
+const authors = await getCollection("authors");
+
+const categoryCounts = CATEGORIES.map((category) => ({
+  ...category,
+  count: posts.filter((post) => post.data.category === category.slug).length,
+}));
+
+const stats = [
+  { label: "Posts", value: posts.length },
+  { label: "Categories", value: CATEGORIES.length },
+  { label: "Authors", value: authors.length },
+];
 ---
 
 <BaseLayout title="Home" permalink="/">
+  {/* Hero */}
   <section
-    class="relative overflow-hidden border-b border-border/50 bg-muted/30 py-20"
+    class="relative overflow-hidden border-b border-border/50 bg-muted/30 py-24 sm:py-32"
   >
-    <FloatingParticles client:idle count={24} />
+    <FloatingParticles client:idle count={32} />
+
     <Container className="relative z-10">
-      <div class="mx-auto max-w-3xl text-center">
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+      <div class="mx-auto max-w-4xl text-center">
+        <div
+          class="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+        >
+          <span class="relative flex h-2 w-2">
+            <span
+              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
+            ></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-primary"
+            ></span>
+          </span>
+          By NukeHub
+        </div>
+
+        <h1
+          class="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl lg:text-7xl"
+        >
           {SITE.name}
         </h1>
-        <p class="mt-4 text-lg text-muted-foreground sm:text-xl">
+        <p
+          class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl"
+        >
           {SITE.tagline}
         </p>
-        <div class="mt-8 flex justify-center gap-3">
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
           <MagneticButton
             href="/posts"
-            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hover:brightness-110"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hover:brightness-110"
             client:load
           >
             Browse posts
           </MagneticButton>
-          <a
-            href="/rss.xml"
-            class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          <MagneticButton
+            href="/categories"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+            client:load
           >
-            Subscribe via RSS
-          </a>
+            Explore categories
+          </MagneticButton>
         </div>
 
-        <div class="mx-auto mt-10 max-w-lg">
-          <NewsletterSignup
-            title="Stay in the loop"
-            description="Get new posts delivered to your inbox. No spam, unsubscribe anytime."
-            variant="card"
-            client:load
-          />
+        {/* Stats */}
+        <div
+          class="mx-auto mt-12 grid max-w-md grid-cols-3 gap-4 rounded-2xl border border-border/60 bg-card/80 p-4 backdrop-blur-sm"
+        >
+          {
+            stats.map((stat) => (
+              <div class="text-center">
+                <div class="text-2xl font-bold text-foreground sm:text-3xl">
+                  {stat.value}
+                </div>
+                <div class="text-xs text-muted-foreground">{stat.label}</div>
+              </div>
+            ))
+          }
         </div>
       </div>
     </Container>
+
+    {/* Decorative gradient blobs */}
+    <div
+      class="pointer-events-none absolute -top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-3xl"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-1/4 right-0 h-[400px] w-[400px] rounded-full bg-primary/[0.05] blur-3xl"
+    >
+    </div>
   </section>
 
+  {/* Featured post */}
   {
     featuredPost && (
-      <section class="py-12">
+      <section class="py-16">
         <Container>
-          <h2 class="mb-6 text-2xl font-semibold tracking-tight">
-            Featured post
-          </h2>
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold tracking-tight">Featured</h2>
+            <a
+              href="/posts"
+              class="text-sm font-medium text-primary hover:underline"
+            >
+              View all posts
+            </a>
+          </div>
           <PostHero post={featuredPost} />
         </Container>
       </section>
     )
   }
 
-  <section class="py-12">
+  {/* Categories */}
+  <section class="border-t border-border/50 bg-muted/20 py-16">
     <Container>
-      <div
-        class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <h2 class="text-2xl font-semibold tracking-tight">Categories</h2>
-        <CategoryNav />
-      </div>
-    </Container>
-  </section>
-
-  <section class="border-t border-border/50 py-12">
-    <Container>
-      <div class="mx-auto max-w-2xl text-center">
-        <h2 class="mb-2 text-2xl font-semibold tracking-tight">Search</h2>
-        <p class="mb-6 text-sm text-muted-foreground">
-          Find posts, authors, categories, and pages across the blog.
+      <div class="mb-8 text-center">
+        <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+          Explore topics
+        </h2>
+        <p class="mt-2 text-muted-foreground">
+          Dive into the areas that matter to the nuclear open-source community.
         </p>
-        <button
-          type="button"
-          class="group flex w-full items-center gap-3 rounded-xl border border-border/60 bg-muted px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-accent-foreground"
-          onclick="window.dispatchEvent(new CustomEvent('command-palette:open'))"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="shrink-0"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-          </svg>
-          <span class="flex-1">Search posts, authors...</span>
-          <kbd
-            class="hidden rounded border border-border bg-background px-1.5 py-0.5 text-xs font-sans sm:inline"
-            >Ctrl K</kbd
-          >
-        </button>
+      </div>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {
+          categoryCounts.map((category) => (
+            <CategoryCard
+              category={category}
+              count={category.count}
+              client:load
+            />
+          ))
+        }
       </div>
     </Container>
   </section>
 
-  <section class="border-t border-border/50 py-12">
+  {/* Latest posts */}
+  <section class="py-16">
     <Container>
       <div class="mb-8 flex items-center justify-between">
         <h2 class="text-2xl font-semibold tracking-tight">Latest posts</h2>
@@ -130,6 +168,40 @@ const latestPosts = posts.slice(0, 6);
         </a>
       </div>
       <PostList posts={latestPosts} client:load />
+    </Container>
+  </section>
+
+  {/* Newsletter */}
+  <section class="border-t border-border/50 py-16">
+    <Container>
+      <div
+        class="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-8 sm:p-12"
+      >
+        <div class="relative z-10 mx-auto max-w-2xl text-center">
+          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Stay in the loop
+          </h2>
+          <p class="mt-2 text-muted-foreground">
+            Get new posts delivered to your inbox. No spam, unsubscribe anytime.
+          </p>
+          <div class="mt-6">
+            <NewsletterSignup
+              title=""
+              description=""
+              variant="compact"
+              client:load
+            />
+          </div>
+        </div>
+        <div
+          class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/[0.05] blur-3xl"
+        >
+        </div>
+        <div
+          class="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/[0.05] blur-3xl"
+        >
+        </div>
+      </div>
     </Container>
   </section>
 </BaseLayout>

@@ -1,4 +1,5 @@
 import { footerColumns, footerLegal, socialLinks } from "@data/footer";
+import { SITE } from "@data/site";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { NewsletterSignup } from "@components/blog/NewsletterSignup";
@@ -19,11 +20,10 @@ export function Footer() {
               className="inline-flex items-center gap-2.5 text-xl font-semibold text-foreground transition-opacity hover:opacity-80"
             >
               <Logo size={28} className="text-primary" />
-              <span>NukeHub Blog</span>
+              <span>{SITE.logoText}</span>
             </a>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              News, tutorials, and updates from the NukeHub community —
-              empowering open-source nuclear engineering.
+              {SITE.description}
             </p>
 
             {/* Newsletter */}
