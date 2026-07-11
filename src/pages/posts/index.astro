@@ -1,16 +1,19 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
-import { PostList } from "@components/blog/PostList";
-import { CategoryNav } from "@components/blog/CategoryNav";
+import { FilteredPostGrid } from "@components/blog/FilteredPostGrid";
 import { getPublishedPosts } from "@lib/posts";
 
 const posts = await getPublishedPosts();
 ---
 
 <PageLayout title="All Posts" permalink="/posts">
-  <div class="mb-8 space-y-4">
+  <div class="mb-8 text-center">
     <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">All Posts</h1>
-    <CategoryNav />
+    <p class="mt-2 text-muted-foreground">
+      {posts.length}
+      {posts.length === 1 ? "post" : "posts"} across every topic.
+    </p>
   </div>
-  <PostList posts={posts} client:load />
+
+  <FilteredPostGrid posts={posts} client:load />
 </PageLayout>
