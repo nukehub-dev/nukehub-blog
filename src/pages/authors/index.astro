@@ -1,17 +1,40 @@
 ---
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import { AuthorBio } from "@components/blog/AuthorBio";
+import { AuthorCard } from "@components/blog/AuthorCard";
 
 const authors = await getCollection("authors");
+const posts = await getCollection("posts");
+
+const postCounts = new Map<string, number>();
+for (const post of posts) {
+  if (post.data.draft && import.meta.env.PROD) continue;
+
+  const ids = [post.data.author, ...(post.data.coAuthors ?? [])];
+  for (const id of ids) {
+    postCounts.set(id, (postCounts.get(id) ?? 0) + 1);
+  }
+}
 ---
 
 <PageLayout title="Authors" permalink="/authors">
-  <h1 class="mb-8 text-3xl font-bold tracking-tight sm:text-4xl">Authors</h1>
-  <div class="space-y-6">
+  <div class="mb-10 text-center">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Authors</h1>
+    <p class="mt-2 text-muted-foreground">
+      {authors.length}
+      {authors.length === 1 ? "writer" : "writers"} sharing knowledge on nuclear engineering
+      and open-source tools.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {
       authors.map((author) => (
-        <AuthorBio author={author} href={`/authors/${author.id}`} client:load />
+        <AuthorCard
+          author={author}
+          postCount={postCounts.get(author.id) ?? 0}
+          client:load
+        />
       ))
     }
   </div>

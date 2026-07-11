@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import { AuthorBio } from "@components/blog/AuthorBio";
+import { AuthorHero } from "@components/blog/AuthorHero";
 import { PostList } from "@components/blog/PostList";
 import { getPostsByAuthor } from "@lib/posts";
 
@@ -22,11 +22,21 @@ const posts = await getPostsByAuthor(author.id);
   description={author.data.bio}
   permalink={`/authors/${author.id}`}
 >
-  <div class="mb-8 space-y-6">
-    <AuthorBio author={author} client:load />
-    <h2 class="text-2xl font-semibold tracking-tight">
-      Posts by {author.data.name}
+  <AuthorHero author={author} posts={posts} client:load />
+
+  <div class="mt-12 mb-8 flex items-center gap-4">
+    <div
+      class="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border"
+    >
+    </div>
+    <h2 class="shrink-0 text-2xl font-semibold tracking-tight">
+      Posts by {author.data.name.split(" ")[0]}
     </h2>
+    <div
+      class="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border"
+    >
+    </div>
   </div>
+
   <PostList posts={posts} client:load />
 </PageLayout>

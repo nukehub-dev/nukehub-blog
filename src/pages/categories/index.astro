@@ -1,40 +1,44 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@components/ui/Card";
+import { CategoryCard } from "@components/blog/CategoryCard";
 import { CATEGORIES } from "@lib/categories";
 import { getPublishedPosts } from "@lib/posts";
 
 const posts = await getPublishedPosts();
 
-const counts = CATEGORIES.map((category) => ({
-  ...category,
-  count: posts.filter((post) => post.data.category === category.slug).length,
-}));
+const categories = CATEGORIES.map((category) => {
+  const categoryPosts = posts
+    .filter((post) => post.data.category === category.slug)
+    .slice(0, 2);
+
+  return {
+    ...category,
+    count: posts.filter((post) => post.data.category === category.slug).length,
+    latestPosts: categoryPosts,
+  };
+});
+
+const totalPosts = posts.length;
 ---
 
 <PageLayout title="Categories" permalink="/categories">
-  <h1 class="mb-8 text-3xl font-bold tracking-tight sm:text-4xl">Categories</h1>
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mb-10 text-center">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Categories</h1>
+    <p class="mt-2 text-muted-foreground">
+      Browse {CATEGORIES.length} topics across {totalPosts}
+      {totalPosts === 1 ? "post" : "posts"}.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {
-      counts.map((category) => (
-        <a href={`/category/${category.slug}`} class="group block">
-          <Card interactive>
-            <CardHeader>
-              <CardTitle>{category.label}</CardTitle>
-              <CardDescription>
-                {category.count} post{category.count === 1 ? "" : "s"}
-              </CardDescription>
-              <p class="text-sm text-muted-foreground">
-                {category.description}
-              </p>
-            </CardHeader>
-          </Card>
-        </a>
+      categories.map((category) => (
+        <CategoryCard
+          category={category}
+          count={category.count}
+          latestPosts={category.latestPosts}
+          client:load
+        />
       ))
     }
   </div>
