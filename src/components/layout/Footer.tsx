@@ -1,4 +1,4 @@
-import { footerColumns, footerLegal, socialLinks } from "@data/footer";
+import { footerColumns, footerLegal } from "@data/footer";
 import { SITE } from "@data/site";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
@@ -38,7 +38,7 @@ export function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
             {footerColumns.map((col) => (
               <div key={col.title}>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
@@ -57,6 +57,13 @@ export function Footer() {
                         >
                           {Icon && (
                             <Icon
+                              size={14}
+                              className="opacity-60 transition-opacity group-hover:opacity-100"
+                            />
+                          )}
+                          {link.brandIcon && (
+                            <BrandIcon
+                              name={link.brandIcon}
                               size={14}
                               className="opacity-60 transition-opacity group-hover:opacity-100"
                             />
@@ -88,38 +95,20 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {year} NukeHub. All rights reserved.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            {/* Social icons */}
-            <div className="flex items-center gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
-                  aria-label={social.name}
-                >
-                  <BrandIcon name={social.name} size={16} />
-                </a>
-              ))}
-            </div>
-
-            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              {footerLegal.map((link) => (
-                <a
-                  key={link.url}
-                  href={link.url}
-                  target={link.newpage ? "_blank" : undefined}
-                  rel={link.newpage ? "noopener noreferrer" : undefined}
-                  className="group relative text-xs text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {link.title}
-                  <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-                </a>
-              ))}
-            </nav>
-          </div>
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {footerLegal.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target={link.newpage ? "_blank" : undefined}
+                rel={link.newpage ? "noopener noreferrer" : undefined}
+                className="group relative text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.title}
+                <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+              </a>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

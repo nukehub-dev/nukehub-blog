@@ -1,10 +1,10 @@
 import type { LucideIcon } from "lucide-react";
+import type { BrandIconProps } from "@components/ui/BrandIcon";
 import {
   Info,
   Mail,
   FileText,
   Heart,
-  Rss,
   Tags,
   Users,
   ExternalLink,
@@ -15,6 +15,7 @@ export interface FooterLink {
   url: string;
   newpage?: boolean;
   icon?: LucideIcon;
+  brandIcon?: BrandIconProps["name"];
 }
 
 export interface FooterColumn {
@@ -29,7 +30,6 @@ export const footerColumns: FooterColumn[] = [
       { title: "All Posts", url: "/posts", icon: FileText },
       { title: "Categories", url: "/categories", icon: Tags },
       { title: "Authors", url: "/authors", icon: Users },
-      { title: "RSS Feed", url: "/rss.xml", icon: Rss },
     ],
   },
   {
@@ -48,12 +48,6 @@ export const footerColumns: FooterColumn[] = [
         icon: Info,
       },
       {
-        title: "Contact",
-        url: "https://nukehub.org/contact",
-        newpage: true,
-        icon: Mail,
-      },
-      {
         title: "Support Us",
         url: "https://nukehub.org/support",
         newpage: true,
@@ -61,9 +55,36 @@ export const footerColumns: FooterColumn[] = [
       },
     ],
   },
+  {
+    title: "Connect",
+    links: [
+      {
+        title: "Contact",
+        url: "https://nukehub.org/contact",
+        newpage: true,
+        icon: Mail,
+      },
+      {
+        title: "GitHub",
+        url: "https://github.com/nukehub-dev",
+        newpage: true,
+        brandIcon: "github",
+      },
+      {
+        title: "LinkedIn",
+        url: "https://www.linkedin.com/company/nukehub",
+        newpage: true,
+        brandIcon: "linkedin",
+      },
+    ],
+  },
 ];
 
 export const footerLegal: FooterLink[] = [
+  {
+    title: "RSS Feed",
+    url: "/rss.xml",
+  },
   {
     title: "Privacy",
     url: "https://nukehub.org/privacy-policy",

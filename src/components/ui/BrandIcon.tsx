@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface BrandIconProps extends React.SVGProps<SVGSVGElement> {
+export interface BrandIconProps extends React.SVGProps<SVGSVGElement> {
   name:
     | "github"
     | "linkedin"
