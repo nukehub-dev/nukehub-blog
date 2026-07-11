@@ -1,6 +1,6 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
-import { PostList } from "@components/blog/PostList";
+import { FilteredPostGrid } from "@components/blog/FilteredPostGrid";
 import { CategoryNav } from "@components/blog/CategoryNav";
 import { CategoryHeader } from "@components/blog/CategoryHeader";
 import { CATEGORY_SLUGS, getCategoryMeta } from "@lib/categories";
@@ -24,9 +24,14 @@ const posts = await getPostsByCategory(category);
 >
   <CategoryHeader category={meta!} count={posts.length} client:load />
 
-  <div class="mt-8 mb-6">
+  <div class="mt-6 mb-5">
     <CategoryNav active={category} />
   </div>
 
-  <PostList posts={posts} client:load />
+  <FilteredPostGrid
+    posts={posts}
+    initialCategory={category}
+    lockCategory
+    client:load
+  />
 </PageLayout>

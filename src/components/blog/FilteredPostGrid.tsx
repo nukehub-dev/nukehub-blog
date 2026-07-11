@@ -8,6 +8,7 @@ import { Badge } from "@components/ui/Badge";
 import { Combobox } from "@components/ui/Combobox";
 import { MultiCombobox } from "@components/ui/MultiCombobox";
 import { CATEGORIES, getCategoryLabel } from "@lib/categories";
+import { cn } from "@lib/utils";
 import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Post } from "@lib/posts";
 
@@ -15,11 +16,19 @@ type SortOption = "newest" | "oldest" | "title";
 
 interface FilteredPostGridProps {
   posts: Post[];
+  initialCategory?: string;
+  lockCategory?: boolean;
 }
 
-export function FilteredPostGrid({ posts }: FilteredPostGridProps) {
+export function FilteredPostGrid({
+  posts,
+  initialCategory,
+  lockCategory = false,
+}: FilteredPostGridProps) {
   const [search, setSearch] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialCategory ? [initialCategory] : [],
+  );
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>("newest");
@@ -117,17 +126,19 @@ export function FilteredPostGrid({ posts }: FilteredPostGridProps) {
 
   const hasFilters =
     search ||
-    selectedCategories.length > 0 ||
     selectedYears.length > 0 ||
-    selectedTags.length > 0;
+    selectedTags.length > 0 ||
+    (!lockCategory && selectedCategories.length > 0);
 
   const clearFilters = useCallback(() => {
     setSearch("");
-    setSelectedCategories([]);
+    setSelectedCategories(
+      lockCategory && initialCategory ? [initialCategory] : [],
+    );
     setSelectedYears([]);
     setSelectedTags([]);
     setSort("newest");
-  }, []);
+  }, [lockCategory, initialCategory]);
 
   const removeCategory = (value: string) =>
     setSelectedCategories((prev) => prev.filter((v) => v !== value));
@@ -167,14 +178,23 @@ export function FilteredPostGrid({ posts }: FilteredPostGridProps) {
           </div>
 
           {/* Filters */}
-          <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <MultiCombobox
-              placeholder="Category"
-              options={categories}
-              values={selectedCategories}
-              onChange={setSelectedCategories}
-              searchPlaceholder="Search categories..."
-            />
+          <div
+            className={cn(
+              "grid flex-1 gap-3",
+              lockCategory
+                ? "grid-cols-1 sm:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+            )}
+          >
+            {!lockCategory && (
+              <MultiCombobox
+                placeholder="Category"
+                options={categories}
+                values={selectedCategories}
+                onChange={setSelectedCategories}
+                searchPlaceholder="Search categories..."
+              />
+            )}
             <MultiCombobox
               placeholder="Year"
               options={years}
@@ -249,19 +269,20 @@ export function FilteredPostGrid({ posts }: FilteredPostGridProps) {
               </button>
             </Badge>
           )}
-          {selectedCategories.map((value) => (
-            <Badge key={value} variant="secondary" className="gap-1 text-xs">
-              {getCategoryLabel(value)}
-              <button
-                type="button"
-                onClick={() => removeCategory(value)}
-                className="rounded-full hover:bg-muted"
-                aria-label={`Remove ${getCategoryLabel(value)} filter`}
-              >
-                <X size={10} />
-              </button>
-            </Badge>
-          ))}
+          {!lockCategory &&
+            selectedCategories.map((value) => (
+              <Badge key={value} variant="secondary" className="gap-1 text-xs">
+                {getCategoryLabel(value)}
+                <button
+                  type="button"
+                  onClick={() => removeCategory(value)}
+                  className="rounded-full hover:bg-muted"
+                  aria-label={`Remove ${getCategoryLabel(value)} filter`}
+                >
+                  <X size={10} />
+                </button>
+              </Badge>
+            ))}
           {selectedYears.map((value) => (
             <Badge key={value} variant="secondary" className="gap-1 text-xs">
               {value}
