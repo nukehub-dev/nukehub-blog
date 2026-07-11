@@ -174,7 +174,7 @@ const articleJsonLd = {
             coverImage && (
               <div
                 class={cn(
-                  "overflow-hidden rounded-xl",
+                  "overflow-hidden rounded-md border border-border/50",
                   isContain
                     ? "flex items-center justify-center"
                     : "aspect-video bg-muted",
@@ -190,7 +190,7 @@ const articleJsonLd = {
                   src={coverImage}
                   alt={title}
                   aspect="auto"
-                  rounded="xl"
+                  rounded="none"
                   fit={fit}
                   transparent={coverImageTransparent}
                   loading="eager"
