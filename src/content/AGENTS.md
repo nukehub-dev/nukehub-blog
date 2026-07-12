@@ -14,8 +14,10 @@ additions/edits belong here.
 
 - `posts` collection uses `.mdx` (Markdown with JSX components).
 - `authors` collection uses `.yml`/`.yaml`.
-- Files with a leading underscore (`_*.mdx`, `_drafts/`) are excluded from the
-  `posts` loader.
+- Posts are folder-based: `src/content/posts/<slug>/index.mdx`. Images live in
+  the same folder.
+- Folders inside underscore-prefixed directories (e.g. `_drafts/`) and folders
+  whose name starts with `_` are excluded from the `posts` loader.
 - Schemas are declared with `zod` (imported from the `zod` package).
 - Rendered entry access uses `getCollection` / `getEntry` / `render` from
   `astro:content`.
@@ -29,6 +31,9 @@ additions/edits belong here.
     `author`.
   - Optional fields: `updatedDate`, `tags`, `featured`, `draft`, `coverImage`,
     `canonicalUrl`.
+  - `coverImage` is a filename inside the post folder; it is resolved to
+    `/assets/images/posts/<slug>/<file>`. Absolute paths still work for external
+    images or shared public assets.
   - `category` must be one of:
     - `news`
     - `tutorials`
@@ -59,19 +64,51 @@ additions/edits belong here.
 - Optional fields should stay optional; defaults belong in `.default(...)` on
   the schema, not at consumption sites.
 
+### Creating a post
+
+Use the interactive scaffold instead of creating files by hand:
+
+```bash
+npm run create:post
+```
+
+The script prompts for the required frontmatter, generates a URL slug from the
+title, and creates a folder-based post:
+
+- `src/content/posts/<slug>/index.mdx` — the post source
+- `src/content/posts/<slug>/` — the asset folder
+
+Authors drop images into the same folder and reference them by filename only in
+frontmatter (`coverImage: hero.png`) and MDX components
+(`<ImageFigure src="figure-1.png" />`).
+
+### Creating or updating an author
+
+Use the interactive scaffold:
+
+```bash
+npm run create:author
+```
+
+The script writes `src/content/authors/<slug>.yml`. If the slug already exists,
+it pre-fills the current values so you can update them.
+
 ### Draft workflow
 
-- Draft posts live in `src/content/posts/_drafts/`.
+- Draft posts live in `src/content/posts/_drafts/<slug>/index.mdx`.
 - Drafts are excluded from the loader pattern.
-- To publish, move the file into `src/content/posts/` and set `draft: false`.
+- To publish, move the folder into `src/content/posts/` and set `draft: false`.
 
 ### Common pitfalls
 
-- **Entry id vs slug.** Astro's `entry.id` is the filename without extension;
-  dynamic routes use it directly. If you rename a post, add a redirect or
-  accept the URL change.
+- **Entry id vs slug.** Astro's `entry.id` is the post folder name; dynamic
+  routes use it directly. If you rename a post, add a redirect or accept the URL
+  change.
 - **Dates are coerced.** `publishedDate` accepts ISO strings (`YYYY-MM-DD`) and
   is coerced to a `Date` object.
+- **Image paths.** Use filenames (`hero.png`) and the build resolves them to
+  `/assets/images/posts/<slug>/hero.png`. Absolute paths still work for external
+  images or shared public assets.
 
 ## Verification
 

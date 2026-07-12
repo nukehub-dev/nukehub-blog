@@ -4,9 +4,10 @@ import { cn } from "@lib/utils";
 import { Badge } from "@components/ui/Badge";
 import { Image } from "@components/ui/Image";
 import { getCategoryLabel } from "@lib/categories";
+import { resolvePostImage } from "@lib/postImages";
+import { resolvePostImagePath } from "@lib/postImagePath";
 import type { Post } from "@lib/posts";
 import sharp from "sharp";
-import path from "node:path";
 
 interface Props {
   post: Post;
@@ -26,12 +27,13 @@ const {
 
 const fit = coverImageFit ?? "cover";
 const isContain = fit === "contain";
+const coverImageSrc = resolvePostImage(coverImage, post.id);
 
 // Read the cover image dimensions at build time so contained covers can use the
 // image's natural aspect ratio instead of being forced into 16:9.
 let coverAspectRatio: string | undefined;
-if (coverImage) {
-  const filePath = path.join(process.cwd(), "public", coverImage);
+if (coverImageSrc) {
+  const filePath = resolvePostImagePath(coverImage, post);
   try {
     const metadata = await sharp(filePath).metadata();
     if (metadata.width && metadata.height) {
@@ -48,7 +50,7 @@ if (coverImage) {
 >
   <div class="grid lg:grid-cols-2">
     {
-      coverImage && (
+      coverImageSrc && (
         <div
           class={cn(
             "relative self-center aspect-video overflow-hidden lg:aspect-auto",
@@ -64,7 +66,7 @@ if (coverImage) {
           }
         >
           <Image
-            src={coverImage}
+            src={coverImageSrc}
             alt={title}
             aspect="auto"
             rounded="md"

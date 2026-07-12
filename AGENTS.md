@@ -144,6 +144,7 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `src/data/` — typed static data: nav, footer, site metadata.
 - `src/styles/` — Tailwind v4 theme entrypoint.
 - `public/` — static assets: fonts, favicon, images, robots.txt.
+- `docs/` — project documentation for contributors and content authors.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `wrangler.toml` — Cloudflare Pages compatibility and output config.
 

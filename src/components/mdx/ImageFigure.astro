@@ -1,5 +1,6 @@
 ---
 import { ImageFigure as ImageFigureReact } from "./ImageFigure";
+import { resolvePostImage } from "@lib/postImages";
 import sharp from "sharp";
 import path from "node:path";
 
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const {
-  src,
+  src: rawSrc,
   alt,
   caption,
   className,
@@ -29,13 +30,26 @@ const {
   transparent,
 } = Astro.props;
 
-// Resolve the on-disk path from the public URL and read the image's aspect
-// ratio so the figure can reserve the exact space without cropping or layout
-// shift. Falls back to no ratio if the file cannot be read or if the author
-// already supplied a value.
+// Derive the post id from the current URL so MDX images can be referenced by
+// filename only. This component is only used inside post pages.
+const urlSegments = Astro.url.pathname.split("/").filter(Boolean);
+const postId = urlSegments[0] === "posts" ? urlSegments[1] : undefined;
+const src = postId ? resolvePostImage(rawSrc, postId) : rawSrc;
+
+// Resolve the on-disk path and read the image's aspect ratio so the figure can
+// reserve the exact space without cropping or layout shift. Relative paths in
+// folder-based posts are resolved to the post source folder; absolute paths are
+// resolved to public/. Falls back to no ratio if the file cannot be read or if
+// the author already supplied a value.
 let detectedAspectRatio: string | undefined;
-if (!authorAspectRatio) {
-  const filePath = path.join(process.cwd(), "public", src);
+if (!authorAspectRatio && src) {
+  const isRelative =
+    !rawSrc.startsWith("/") &&
+    !rawSrc.startsWith("http://") &&
+    !rawSrc.startsWith("https://");
+  const filePath = isRelative
+    ? path.resolve("src/content/posts", postId ?? "", rawSrc)
+    : path.join(process.cwd(), "public", src);
   try {
     const metadata = await sharp(filePath).metadata();
     if (metadata.width && metadata.height) {

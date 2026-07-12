@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/Card";
 import { Badge } from "@components/ui/Badge";
 import { Image } from "@components/ui/Image";
 import { getCategoryLabel } from "@lib/categories";
+import { resolvePostImage } from "@lib/postImages";
 import type { Post } from "@lib/posts";
 
 interface PostCardProps {
@@ -12,13 +13,14 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const { title, description, publishedDate, category, coverImage, tags } =
     post.data;
+  const coverImageSrc = resolvePostImage(coverImage, post.id);
 
   return (
     <a href={`/posts/${post.id}`} className="group block">
       <Card variant="bubble" interactive className="h-full overflow-hidden">
-        {coverImage && (
+        {coverImageSrc && (
           <Image
-            src={coverImage}
+            src={coverImageSrc}
             alt={title}
             aspect="video"
             rounded="none"
