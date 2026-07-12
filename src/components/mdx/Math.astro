@@ -1,0 +1,16 @@
+---
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+interface Props {
+  math: string;
+}
+
+const { math } = Astro.props;
+const html = katex.renderToString(math, {
+  displayMode: true,
+  throwOnError: false,
+});
+---
+
+<div class="my-6 overflow-x-auto" set:html={html} />

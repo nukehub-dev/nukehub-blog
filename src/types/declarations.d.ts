@@ -9,3 +9,8 @@ declare module "*.yaml" {
   const content: Record<string, unknown>;
   export default content;
 }
+
+declare module "plotly.js-dist-min" {
+  import * as Plotly from "plotly.js";
+  export default Plotly;
+}

@@ -57,7 +57,8 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, `TableOfContents`,
   `NewsletterSignup`, etc.
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
-  `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`.
+  `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
+  `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
 
 ### Environment variables

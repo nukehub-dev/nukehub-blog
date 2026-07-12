@@ -16,8 +16,9 @@ additions/edits belong here.
 - `authors` collection uses `.yml`/`.yaml`.
 - Posts are folder-based: `src/content/posts/<slug>/index.mdx`. Images live in
   the same folder.
-- Folders inside underscore-prefixed directories (e.g. `_drafts/`) and folders
-  whose name starts with `_` are excluded from the `posts` loader.
+- Folders whose name starts with `_` are excluded from the `posts` loader.
+- The loader clears the content store on every sync so deleted or renamed posts
+  do not leak into production builds.
 - Schemas are declared with `zod` (imported from the `zod` package).
 - Rendered entry access uses `getCollection` / `getEntry` / `render` from
   `astro:content`.
@@ -29,11 +30,16 @@ additions/edits belong here.
 - `posts` (mdx/md) — blog posts.
   - Required fields: `title`, `description`, `publishedDate`, `category`,
     `author`.
-  - Optional fields: `updatedDate`, `tags`, `featured`, `draft`, `coverImage`,
-    `canonicalUrl`.
+  - Optional fields: `updatedDate`, `coAuthors`, `tags`, `featured`, `draft`,
+    `coverImage`, `coverImageFit`, `coverImageTransparent`, `canonicalUrl`,
+    `references`.
   - `coverImage` is a filename inside the post folder; it is resolved to
     `/assets/images/posts/<slug>/<file>`. Absolute paths still work for external
     images or shared public assets.
+  - `coverImageFit` accepts `cover`, `contain`, `fill`, or `none` (default
+    `cover`).
+  - `references` is a list of citation objects used by the `<Citation id="..." />`
+    component.
   - `category` must be one of:
     - `news`
     - `tutorials`
@@ -95,7 +101,8 @@ it pre-fills the current values so you can update them.
 
 ### Draft workflow
 
-Use the `draft` frontmatter flag to control publication:
+Use the `draft` frontmatter flag to control publication. Do not use a separate
+`_drafts/` folder; that mechanism is no longer supported by the loader.
 
 - `draft: true` — visible during development for preview, but excluded from
   production builds.

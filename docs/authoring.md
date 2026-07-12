@@ -132,6 +132,82 @@ the frontmatter. See the **References** section below for details.
 OpenMC uses continuous-energy nuclear data<Citation id="openmc-docs" />.
 ```
 
+### Math
+
+Render LaTeX math with KaTeX. Use `<InlineMath />` for equations inside a
+sentence and `<Math />` for display equations.
+
+```mdx
+The macroscopic absorption cross section is
+
+<InlineMath math="\Sigma_a = N \sigma_a" />.
+
+<Math math="\frac{\partial n}{\partial t} + v \cdot \nabla n = \frac{\nu \Sigma_f}{k_{\text{eff}}} \phi - \Sigma_a \phi" />
+```
+
+### Data tables
+
+Use `<DataTable />` for structured data that needs better styling and horizontal
+scrolling on small screens. Pass `columns` and `data` as props; each row is an
+object whose keys match the column keys.
+
+```mdx
+<DataTable
+  columns={[
+    { key: "isotope", header: "Isotope" },
+    { key: "halfLife", header: "Half-life", align: "right" },
+    { key: "decayMode", header: "Decay mode" },
+  ]}
+  data={[
+    { isotope: "U-235", halfLife: "704 Myr", decayMode: "α" },
+    { isotope: "U-238", halfLife: "4.468 Gyr", decayMode: "α" },
+    { isotope: "Pu-239", halfLife: "24.1 kyr", decayMode: "α" },
+  ]}
+  caption="Selected actinide half-lives."
+/>
+```
+
+### Charts
+
+Use `<Plotly />` for interactive charts. Pass a Plotly `data` array and an
+optional `layout` object. Plotly loads on demand, so it only adds weight to
+pages that use it.
+
+```mdx
+<Plotly
+  data={[
+    {
+      x: [0, 0.625, 1.25, 2.5, 5.0, 10.0],
+      y: [1.0, 0.88, 0.72, 0.48, 0.22, 0.05],
+      type: "scatter",
+      mode: "lines+markers",
+      name: "U-235 fission spectrum",
+    },
+  ]}
+  layout={{
+    title: "Fission neutron spectrum",
+    xaxis: { title: "Energy (eV)", type: "log" },
+    yaxis: { title: "Relative flux" },
+  }}
+/>
+```
+
+### Diagrams
+
+Use `<Mermaid />` for flowcharts, sequence diagrams, Gantt charts, and other
+diagrams. Pass the diagram source as a string.
+
+```mdx
+<Mermaid
+  chart={`
+flowchart TD
+    A[Fuel pellet] --> B[Cladding]
+    B --> C[Coolant]
+    C --> D[Steam generator]
+`}
+/>
+```
+
 ## Frontmatter schema
 
 | Field                   | Required | Type     | Notes                                                                   |

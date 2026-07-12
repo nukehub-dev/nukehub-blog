@@ -15,6 +15,7 @@ const POSTS_DIR = "./src/content/posts";
  */
 interface LoaderContext {
   store: {
+    clear(): void;
     set(entry: {
       id: string;
       data: unknown;
@@ -34,6 +35,10 @@ const postsLoader = {
     const baseDir = path.resolve(POSTS_DIR);
     const siteRoot = path.resolve(".");
     const seen = new Set<string>();
+
+    // Remove stale entries so deleted or renamed folders don't leak into the
+    // persistent content store.
+    store.clear();
 
     let entries;
     try {

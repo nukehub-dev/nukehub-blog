@@ -1,0 +1,12 @@
+---
+import { Mermaid as MermaidReact } from "./MermaidClient";
+
+interface Props {
+  chart: string;
+  className?: string;
+}
+
+const { chart, className } = Astro.props;
+---
+
+<MermaidReact chart={chart} className={className} client:visible />
