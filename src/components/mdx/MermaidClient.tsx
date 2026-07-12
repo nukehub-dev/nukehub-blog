@@ -9,42 +9,81 @@ interface MermaidProps {
 function getResolvedTheme(): "default" | "dark" {
   if (typeof document === "undefined") return "default";
   const theme = document.documentElement.getAttribute("data-theme");
-  if (theme === "dark") return "dark";
-  return "default";
+  return theme === "dark" ? "dark" : "default";
 }
 
 export function Mermaid({ chart, className }: MermaidProps) {
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const ref = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
+  const chartRef = useRef(chart);
+  const isMountedRef = useRef(true);
+  chartRef.current = chart;
 
   useEffect(() => {
-    let cancelled = false;
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-    import("mermaid").then((mod) => {
-      if (cancelled) return;
+  const renderChart = async () => {
+    if (typeof window === "undefined") return;
 
-      const mermaid = mod.default;
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: getResolvedTheme(),
-        securityLevel: "loose",
-      });
+    const mod = await import("mermaid");
+    const mermaid = mod.default;
 
-      mermaid
-        .render(`mermaid-${id}`, chart)
-        .then(({ svg: renderedSvg }) => {
-          if (!cancelled) setSvg(renderedSvg);
-        })
-        .catch(() => {
-          if (!cancelled) setSvg("<p>Failed to render diagram.</p>");
-        });
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getResolvedTheme(),
+      securityLevel: "loose",
     });
 
+    try {
+      const { svg: renderedSvg } = await mermaid.render(
+        `mermaid-${id}`,
+        chartRef.current,
+      );
+      if (isMountedRef.current) setSvg(renderedSvg);
+    } catch {
+      if (isMountedRef.current) setSvg("<p>Failed to render diagram.</p>");
+    }
+  };
+
+  // Initial render.
+  useEffect(() => {
+    let cancelled = false;
+    renderChart().then(() => {
+      if (cancelled) return;
+    });
     return () => {
       cancelled = true;
     };
-  }, [chart, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Re-render when the theme changes.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const observer = new MutationObserver(() => {
+      renderChart();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Re-render when the chart source changes.
+  useEffect(() => {
+    renderChart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chart]);
 
   return (
     <div

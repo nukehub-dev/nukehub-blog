@@ -12,8 +12,9 @@ interface PlotlyProps {
 function getResolvedColor(variable: string): string {
   if (typeof document === "undefined") return "#000000";
 
-  // Plotly's parser does not always understand oklch/color-mix, so resolve the
-  // custom property through a real element's computed `color`.
+  // Resolve the CSS custom property through a real element, then normalize it
+  // to a hex color Plotly can reliably parse (some browsers return oklch or
+  // color(srgb ...) from getComputedStyle).
   const probe = document.createElement("div");
   probe.style.position = "fixed";
   probe.style.visibility = "hidden";
@@ -21,7 +22,12 @@ function getResolvedColor(variable: string): string {
   document.body.appendChild(probe);
   const resolved = getComputedStyle(probe).color;
   document.body.removeChild(probe);
-  return resolved || "#000000";
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return resolved || "#000000";
+  ctx.fillStyle = resolved;
+  return ctx.fillStyle;
 }
 
 function getThemeColors() {
@@ -93,7 +99,16 @@ export function Plotly({ data, layout, config, className }: PlotlyProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isReady, setIsReady] = useState(false);
   const plotlyRef = useRef<typeof import("plotly.js") | null>(null);
+  const dataRef = useRef(data);
+  const layoutRef = useRef(layout);
+  const configRef = useRef(config);
 
+  // Keep refs in sync without re-triggering effects.
+  dataRef.current = data;
+  layoutRef.current = layout;
+  configRef.current = config;
+
+  // Initial render.
   useEffect(() => {
     let cancelled = false;
 
@@ -106,9 +121,9 @@ export function Plotly({ data, layout, config, className }: PlotlyProps) {
 
       Plotly.newPlot(
         ref.current,
-        data,
-        buildLayout(layout, colors),
-        buildConfig(config),
+        dataRef.current,
+        buildLayout(layoutRef.current, colors),
+        buildConfig(configRef.current),
       ).then(() => {
         if (!cancelled) setIsReady(true);
       });
@@ -117,22 +132,34 @@ export function Plotly({ data, layout, config, className }: PlotlyProps) {
     return () => {
       cancelled = true;
     };
-  }, [data, layout, config]);
+  }, []);
 
-  // Update the chart when the theme changes.
+  // Update the chart when props change.
   useEffect(() => {
-    if (typeof document === "undefined" || !ref.current) return;
+    const Plotly = plotlyRef.current;
+    if (!isReady || !Plotly || !ref.current) return;
+
+    Plotly.react(
+      ref.current,
+      data,
+      buildLayout(layout, getThemeColors()),
+      buildConfig(config),
+    );
+  }, [data, layout, config, isReady]);
+
+  // React to theme changes.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
 
     const observer = new MutationObserver(() => {
       const Plotly = plotlyRef.current;
       if (!Plotly || !ref.current) return;
 
-      const colors = getThemeColors();
       Plotly.react(
         ref.current,
-        data,
-        buildLayout(layout, colors),
-        buildConfig(config),
+        dataRef.current,
+        buildLayout(layoutRef.current, getThemeColors()),
+        buildConfig(configRef.current),
       );
     });
 
@@ -142,11 +169,11 @@ export function Plotly({ data, layout, config, className }: PlotlyProps) {
     });
 
     return () => observer.disconnect();
-  }, [data, layout, config]);
+  }, []);
 
   // Keep the chart sized correctly when the window resizes.
   useEffect(() => {
-    if (typeof window === "undefined" || !ref.current) return;
+    if (typeof window === "undefined") return;
 
     const handleResize = () => {
       const Plotly = plotlyRef.current;
