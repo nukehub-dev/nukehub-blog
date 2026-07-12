@@ -30,6 +30,7 @@ export function PostCard({ post }: PostCardProps) {
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="default">{getCategoryLabel(category)}</Badge>
+            {post.data.draft && <Badge variant="outline">Draft</Badge>}
             {tags.slice(0, 2).map((tag) => (
               <Badge key={tag} variant="ghost">
                 {tag}

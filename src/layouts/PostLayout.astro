@@ -104,6 +104,15 @@ const articleJsonLd = {
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="flex flex-col gap-12 lg:flex-row lg:justify-center">
       <article id="article-content" class="w-full max-w-3xl">
+        {
+          post.data.draft && (
+            <div class="mb-6 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+              <span class="font-semibold">Draft</span> — visible in development,
+              excluded from production builds.
+            </div>
+          )
+        }
+
         <header class="space-y-6">
           <div class="flex flex-wrap items-center gap-2">
             <Badge variant="default">{getCategoryLabel(category)}</Badge>

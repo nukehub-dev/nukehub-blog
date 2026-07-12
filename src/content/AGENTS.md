@@ -95,9 +95,11 @@ it pre-fills the current values so you can update them.
 
 ### Draft workflow
 
-- Draft posts live in `src/content/posts/_drafts/<slug>/index.mdx`.
-- Drafts are excluded from the loader pattern.
-- To publish, move the folder into `src/content/posts/` and set `draft: false`.
+Use the `draft` frontmatter flag to control publication:
+
+- `draft: true` — visible during development for preview, but excluded from
+  production builds.
+- `draft: false` (default) — published normally.
 
 ### Common pitfalls
 

@@ -222,5 +222,12 @@ links:
 
 ## Drafts
 
-Drafts live in `src/content/posts/_drafts/` and are excluded from the content
-loader. To publish, move the file into `src/content/posts/` and set `draft: false`.
+Use the `draft` frontmatter flag to control publication:
+
+- `draft: true` — the post is visible in development so you can preview it, but
+  it is excluded from production builds.
+- `draft: false` (default) — the post is published.
+
+To publish a draft, change `draft: true` to `draft: false`. The interactive
+`npm run create:post` scaffold asks whether to start a post as a draft and sets
+the flag automatically.

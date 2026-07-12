@@ -11,8 +11,7 @@ const POSTS_DIR = "./src/content/posts";
  * Custom loader for folder-based posts.
  *
  * Every post lives in `src/content/posts/<slug>/index.mdx` with its images in
- * the same folder. Any path segment starting with `_` is skipped (drafts,
- * partials, etc.).
+ * the same folder. Post folders whose slug starts with `_` are skipped.
  */
 interface LoaderContext {
   store: {
@@ -54,11 +53,6 @@ const postsLoader = {
       const absolutePath = path.join(entry.parentPath, entry.name);
       const relPath = path.relative(baseDir, absolutePath);
       const siteRelPath = path.relative(siteRoot, absolutePath);
-      const segments = relPath.split(path.sep);
-
-      // Skip folders inside underscore-prefixed directories (e.g. _drafts).
-      if (segments.some((seg) => seg.startsWith("_"))) continue;
-
       const dir = path.dirname(relPath);
       if (dir === ".") continue;
 
