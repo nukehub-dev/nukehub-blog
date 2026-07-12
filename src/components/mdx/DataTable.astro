@@ -1,0 +1,45 @@
+---
+import { DataTable as DataTableReact } from "./DataTable";
+import type { ReactNode } from "react";
+
+interface Column {
+  key: string;
+  header: ReactNode;
+  align?: "left" | "right" | "center";
+  sortable?: boolean;
+}
+
+interface Props {
+  columns: Column[];
+  data: Record<string, ReactNode>[];
+  caption?: ReactNode;
+  className?: string;
+  sortable?: boolean;
+  searchable?: boolean;
+  pagination?: boolean;
+  pageSize?: number;
+}
+
+const {
+  columns,
+  data,
+  caption,
+  className,
+  sortable,
+  searchable,
+  pagination,
+  pageSize,
+} = Astro.props;
+---
+
+<DataTableReact
+  client:visible
+  columns={columns as any}
+  data={data as any}
+  caption={caption}
+  className={className}
+  sortable={sortable}
+  searchable={searchable}
+  pagination={pagination}
+  pageSize={pageSize}
+/>

@@ -59,6 +59,8 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
   `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`.
+  - `DataTable` supports optional column sorting, global search, and pagination
+    via `sortable`, `searchable`, and `pagination` props.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
 
 ### Environment variables
