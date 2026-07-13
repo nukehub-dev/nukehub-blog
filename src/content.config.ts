@@ -118,6 +118,13 @@ const posts = defineCollection({
           url: z.string().url(),
           source: z.string().optional(),
           date: z.string().optional(),
+          // Structured fields for BibTeX/RIS export. `source` remains the
+          // display string; these power the machine-readable copy formats.
+          authors: z.array(z.string()).optional(),
+          type: z
+            .enum(["article", "book", "inproceedings", "techreport", "misc"])
+            .default("misc"),
+          publisher: z.string().optional(),
         }),
       )
       .default([]),

@@ -1,27 +1,12 @@
 import { cn } from "@lib/utils";
+import { buildCopyFormats } from "@lib/citations";
+import type { Reference } from "@lib/citations";
 import { ExternalLink } from "lucide-react";
 import { CopyButton } from "./CopyButton";
-
-interface Reference {
-  id: string;
-  title: string;
-  url: string;
-  source?: string;
-  date?: string;
-}
 
 interface ReferencesProps {
   references: Reference[];
   className?: string;
-}
-
-function formatCitation(ref: Reference): string {
-  const parts: string[] = [];
-  if (ref.source) parts.push(ref.source);
-  parts.push(`"${ref.title}"`);
-  if (ref.date) parts.push(`(${ref.date})`);
-  parts.push(ref.url);
-  return parts.join(". ") + ".";
 }
 
 export function References({ references, className }: ReferencesProps) {
@@ -76,7 +61,7 @@ export function References({ references, className }: ReferencesProps) {
                 </a>
               </div>
               <CopyButton
-                text={formatCitation(ref)}
+                formats={buildCopyFormats(ref)}
                 label={`Copy citation for ${ref.id}`}
                 className="shrink-0"
               />

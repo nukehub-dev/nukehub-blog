@@ -40,7 +40,11 @@ additions/edits belong here.
   - `coverImageFit` accepts `cover`, `contain`, `fill`, or `none` (default
     `cover`).
   - `references` is a list of citation objects used by the `<Citation id="..." />`
-    component.
+    component. Required per entry: `id`, `title`, `url`. Optional: `source`
+    (display string), `date`, plus structured fields for the copy menu's
+    BibTeX/RIS export: `authors` (list), `type` (`article`, `book`,
+    `inproceedings`, `techreport`, `misc`; default `misc`), and `publisher`.
+    Formatters live in `src/lib/citations.ts`.
   - `category` must be one of:
     - `news`
     - `tutorials`

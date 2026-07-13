@@ -84,6 +84,8 @@ Public env vars are bundled into the static site. `PUBLIC_API_URL` and
   - `favicon.ts` — dynamic favicon + theme color.
   - `posts.ts` — post filtering/sorting helpers.
   - `categories.ts` — category metadata.
+  - `citations.ts` — citation formatters (plain text, BibTeX, RIS) for post
+    references.
 - `src/types/declarations.d.ts` — ambient type declarations.
 
 ### Component reuse

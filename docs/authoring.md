@@ -283,6 +283,25 @@ OpenMC uses continuous-energy nuclear data<Citation id="openmc2023" />.
 ```
 
 The references section is rendered automatically at the bottom of the post.
+Each entry has a copy button: one click copies the plain-text citation, and
+the chevron opens a menu with **BibTeX** and **RIS** formats. For clean
+BibTeX/RIS output, add the optional structured fields (`source` stays the
+display string):
+
+```yaml
+references:
+  - id: duderstadt1976
+    title: Nuclear Reactor Analysis
+    url: https://www.amazon.com/Nuclear-Reactor-Analysis-James-Duderstadt/dp/0471223638
+    source: James J. Duderstadt and Louis J. Hamilton
+    date: "1976"
+    type: book # article | book | inproceedings | techreport | misc (default)
+    authors: ["Duderstadt, James J.", "Hamilton, Louis J."]
+    publisher: John Wiley & Sons
+```
+
+Entries without the structured fields still export valid BibTeX/RIS using
+`source` and the year extracted from `date` as fallbacks.
 
 ## Newsletter
 
