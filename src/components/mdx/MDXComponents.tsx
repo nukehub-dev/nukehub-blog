@@ -9,6 +9,10 @@ import Math from "./Math.astro";
 import DataTable from "./DataTable.astro";
 import Plotly from "./Plotly.astro";
 import Mermaid from "./Mermaid.astro";
+import Tabs from "./Tabs.astro";
+import Tab from "./Tab.astro";
+import { Steps, Step } from "./Steps";
+import { FileTree } from "./FileTree";
 
 export const MDXComponents = {
   YouTube,
@@ -22,4 +26,9 @@ export const MDXComponents = {
   DataTable,
   Plotly,
   Mermaid,
+  Tabs,
+  Tab,
+  Steps,
+  Step,
+  FileTree,
 };

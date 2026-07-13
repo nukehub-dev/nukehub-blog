@@ -58,9 +58,13 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `NewsletterSignup`, etc.
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
-  `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`.
+  `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`, `Tabs`, `Steps`,
+  `FileTree`.
   - `DataTable` supports optional column sorting, global search, and pagination
     via `sortable`, `searchable`, and `pagination` props.
+  - `Tabs` uses `<Tabs>` + `<Tab label="...">` for switchable content panels.
+  - `Steps` uses `<Steps>` + `<Step>` for numbered procedures.
+  - `FileTree` renders a nested directory tree from an `items` prop.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
 
 ### Environment variables

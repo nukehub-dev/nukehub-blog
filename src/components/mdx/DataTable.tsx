@@ -2,7 +2,13 @@ import * as React from "react";
 import { cn } from "@lib/utils";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
-import { ArrowUp, ArrowDown, ArrowUpDown, Search } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  Search,
+  Download,
+} from "lucide-react";
 
 interface Column<T extends Record<string, React.ReactNode>> {
   key: keyof T;
@@ -26,6 +32,14 @@ interface DataTableProps<T extends Record<string, React.ReactNode>> {
   /** Enable pagination. */
   pagination?: boolean;
   pageSize?: number;
+  /** Show a CSV export button for the filtered/sorted rows. */
+  exportable?: boolean;
+}
+
+function escapeCsv(value: string): string {
+  const safe = value.replace(/"/g, '""');
+  if (/[",\n\r]/.test(safe)) return `"${safe}"`;
+  return safe;
 }
 
 function cellText(value: React.ReactNode): string {
@@ -60,6 +74,7 @@ export function DataTable<T extends Record<string, React.ReactNode>>({
   searchable = false,
   pagination = false,
   pageSize = 15,
+  exportable = false,
 }: DataTableProps<T>) {
   const [query, setQuery] = React.useState("");
   const [sortKey, setSortKey] = React.useState<keyof T | null>(null);
@@ -111,19 +126,56 @@ export function DataTable<T extends Record<string, React.ReactNode>>({
   const startRow = sorted.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
   const endRow = Math.min(safePage * pageSize, sorted.length);
 
+  const handleExport = () => {
+    if (typeof window === "undefined") return;
+
+    const headers = columns.map((col) => cellText(col.header));
+    const rows = sorted.map((row) =>
+      columns.map((col) => escapeCsv(cellText(row[col.key]))).join(","),
+    );
+    const csv = [headers.join(","), ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const showToolbar = searchable || exportable;
+
   return (
     <div className={cn("space-y-3 not-prose", className)}>
-      {searchable && (
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search table…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9"
-            aria-label="Search table"
-          />
+      {showToolbar && (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          {searchable && (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search table…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9"
+                aria-label="Search table"
+              />
+            </div>
+          )}
+          {exportable && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              className="shrink-0"
+            >
+              <Download className="mr-1.5 h-4 w-4" />
+              Export CSV
+            </Button>
+          )}
         </div>
       )}
 

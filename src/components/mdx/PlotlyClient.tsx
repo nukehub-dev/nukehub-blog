@@ -2,11 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import type { Data, Layout, Config } from "plotly.js";
 import { cn } from "@lib/utils";
 
+type Aspect = "video" | "square" | "portrait" | "wide" | "auto";
+
+const ASPECT_RATIOS: Record<Aspect, string | undefined> = {
+  video: "16 / 9",
+  square: "1 / 1",
+  portrait: "3 / 4",
+  wide: "21 / 9",
+  auto: undefined,
+};
+
 interface PlotlyProps {
   data: Data[];
   layout?: Partial<Layout>;
   config?: Partial<Config>;
   className?: string;
+  aspect?: Aspect;
 }
 
 function getResolvedColor(variable: string): string {
@@ -95,7 +106,13 @@ function buildLayout(
   };
 }
 
-export function Plotly({ data, layout, config, className }: PlotlyProps) {
+export function Plotly({
+  data,
+  layout,
+  config,
+  className,
+  aspect = "video",
+}: PlotlyProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isReady, setIsReady] = useState(false);
   const plotlyRef = useRef<typeof import("plotly.js") | null>(null);
@@ -189,10 +206,12 @@ export function Plotly({ data, layout, config, className }: PlotlyProps) {
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border border-border/50",
-        "aspect-video bg-background",
+        "relative w-full overflow-hidden rounded-xl border border-border/50 bg-background",
         className,
       )}
+      style={
+        aspect === "auto" ? undefined : { aspectRatio: ASPECT_RATIOS[aspect] }
+      }
     >
       {!isReady && (
         <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">

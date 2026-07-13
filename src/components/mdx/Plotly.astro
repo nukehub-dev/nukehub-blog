@@ -7,9 +7,10 @@ interface Props {
   layout?: Partial<Layout>;
   config?: Partial<Config>;
   className?: string;
+  aspect?: "video" | "square" | "portrait" | "wide" | "auto";
 }
 
-const { data, layout, config, className } = Astro.props;
+const { data, layout, config, className, aspect } = Astro.props;
 ---
 
 <PlotlyReact
@@ -17,5 +18,6 @@ const { data, layout, config, className } = Astro.props;
   layout={layout}
   config={config}
   className={className}
+  aspect={aspect}
   client:visible
 />

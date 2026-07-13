@@ -18,6 +18,7 @@ interface Props {
   searchable?: boolean;
   pagination?: boolean;
   pageSize?: number;
+  exportable?: boolean;
 }
 
 const {
@@ -29,6 +30,7 @@ const {
   searchable,
   pagination,
   pageSize,
+  exportable,
 } = Astro.props;
 ---
 
@@ -42,4 +44,5 @@ const {
   searchable={searchable}
   pagination={pagination}
   pageSize={pageSize}
+  exportable={exportable}
 />

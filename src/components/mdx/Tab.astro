@@ -1,0 +1,28 @@
+---
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+const panelId = Math.random().toString(36).slice(2);
+---
+
+<button
+  type="button"
+  data-tab-target={panelId}
+  data-tab-label={label}
+  role="tab"
+  aria-selected="false"
+  class="relative shrink-0 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+>
+  {label}
+</button>
+<div
+  id={panelId}
+  data-tab-label={label}
+  role="tabpanel"
+  class="tab-panel block p-4"
+  hidden
+>
+  <slot />
+</div>
