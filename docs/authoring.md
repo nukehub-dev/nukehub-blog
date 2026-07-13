@@ -303,6 +303,15 @@ references:
 Entries without the structured fields still export valid BibTeX/RIS using
 `source` and the year extracted from `date` as fallbacks.
 
+## Sharing and citing posts
+
+Every post automatically gets **Share** and **Cite** controls in its header
+meta row — no author action needed. Share offers copy-link, X, Bluesky,
+Mastodon (via an instance picker), LinkedIn, and email (plus the system share
+sheet where the browser supports it). Cite opens a dialog with Text / BibTeX /
+RIS formats generated from the post's own metadata (title, authors, date,
+URL), using the same formatters as the references copy menu.
+
 ## Newsletter
 
 The blog uses the NukeHub API server for email subscriptions. To enable the
