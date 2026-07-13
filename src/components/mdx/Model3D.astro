@@ -1,0 +1,31 @@
+---
+import { Model3D as Model3DReact } from "./Model3DClient";
+import { resolvePostImage } from "@lib/postImages";
+
+interface Props {
+  /** Filename inside the post folder (e.g. model.glb) or an absolute URL. */
+  src: string;
+  caption?: string;
+  className?: string;
+  aspect?: "video" | "square" | "portrait" | "wide" | "auto";
+  /** Gentle turntable rotation; defaults to true. */
+  autoRotate?: boolean;
+}
+
+const { src: rawSrc, caption, className, aspect, autoRotate } = Astro.props;
+
+// Same convention as ImageFigure: bare filenames resolve against the current
+// post folder and are served by the postAssets Vite plugin.
+const urlSegments = Astro.url.pathname.split("/").filter(Boolean);
+const postId = urlSegments[0] === "posts" ? urlSegments[1] : undefined;
+const src = postId ? resolvePostImage(rawSrc, postId) : rawSrc;
+---
+
+<Model3DReact
+  src={src}
+  caption={caption}
+  className={className}
+  aspect={aspect}
+  autoRotate={autoRotate}
+  client:visible
+/>

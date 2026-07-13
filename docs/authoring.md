@@ -12,9 +12,10 @@ This prompts for the title, description, category, author, tags, and cover
 image, then creates a folder-based post:
 
 - `src/content/posts/<slug>/index.mdx` — the post source
-- `src/content/posts/<slug>/` — the asset folder for images
+- `src/content/posts/<slug>/` — the asset folder for images, videos, and 3-D
+  models
 
-After the script finishes, add your images to the same folder and reference them
+After the script finishes, add your assets to the same folder and reference them
 by filename only.
 
 ### Manual frontmatter example
@@ -191,6 +192,38 @@ pages that use it.
   }}
 />
 ```
+
+For larger datasets, put a `.json` (or `.ts`) file in the post folder and
+import it at the top of the MDX instead of inlining the data:
+
+```mdx
+import spectrum from "./spectrum.json";
+
+<Plotly data={spectrum.traces} layout={spectrum.layout} />
+```
+
+Note the data is serialized into the page HTML, so keep imports below roughly
+100 KB.
+
+### 3-D models
+
+Use `<Model3D />` to embed an interactive glTF viewer. Drop a `.glb` file into
+the post folder and reference it by filename. The viewer (three.js) loads
+lazily when scrolled into view, follows the site theme, and is static by
+default. A control bar lets readers toggle auto-rotation, snap to Iso / Front /
+Top / Side views, and expand the viewer to fullscreen (Esc to exit).
+
+```mdx
+<Model3D
+  src="tokamak_with_divertor.glb"
+  caption="Drag to orbit, scroll to zoom."
+/>
+```
+
+Optional props: `aspect` (`video`, `square`, `portrait`, `wide`, `auto`) and
+`autoRotate` (turntable rotation on load; default off). Convert STEP/B-rep
+geometry to `.glb` offline (e.g. with cadquery + trimesh) and keep files under
+~5 MB.
 
 ### Diagrams
 

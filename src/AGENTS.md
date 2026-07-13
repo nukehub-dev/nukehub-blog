@@ -59,12 +59,16 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
   `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`, `Tabs`, `Steps`,
-  `FileTree`.
+  `FileTree`, `Model3D`.
   - `DataTable` supports optional column sorting, global search, and pagination
     via `sortable`, `searchable`, and `pagination` props.
   - `Tabs` uses `<Tabs>` + `<Tab label="...">` for switchable content panels.
   - `Steps` uses `<Steps>` + `<Step>` for numbered procedures.
   - `FileTree` renders a nested directory tree from an `items` prop.
+  - `Model3D` renders `.glb` files from the post folder in a three.js orbit
+    viewer (`Model3D.astro` + `Model3DClient.tsx`, `client:visible`, dynamic
+    import like `Plotly`). Static by default; the control bar offers a rotate
+    toggle, Iso/Front/Top/Side presets, and fullscreen.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
 
 ### Environment variables

@@ -13,6 +13,7 @@ import Tabs from "./Tabs.astro";
 import Tab from "./Tab.astro";
 import { Steps, Step } from "./Steps";
 import { FileTree } from "./FileTree";
+import Model3D from "./Model3D.astro";
 
 export const MDXComponents = {
   YouTube,
@@ -31,4 +32,5 @@ export const MDXComponents = {
   Steps,
   Step,
   FileTree,
+  Model3D,
 };

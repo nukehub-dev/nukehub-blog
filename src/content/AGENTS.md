@@ -14,8 +14,9 @@ additions/edits belong here.
 
 - `posts` collection uses `.mdx` (Markdown with JSX components).
 - `authors` collection uses `.yml`/`.yaml`.
-- Posts are folder-based: `src/content/posts/<slug>/index.mdx`. Images live in
-  the same folder.
+- Posts are folder-based: `src/content/posts/<slug>/index.mdx`. Images, videos,
+  and 3-D models (`.glb`) live in the same folder and are referenced by
+  filename only.
 - Folders whose name starts with `_` are excluded from the `posts` loader.
 - The loader clears the content store on every sync so deleted or renamed posts
   do not leak into production builds.
@@ -84,9 +85,9 @@ title, and creates a folder-based post:
 - `src/content/posts/<slug>/index.mdx` — the post source
 - `src/content/posts/<slug>/` — the asset folder
 
-Authors drop images into the same folder and reference them by filename only in
+Authors drop assets into the same folder and reference them by filename only in
 frontmatter (`coverImage: hero.png`) and MDX components
-(`<ImageFigure src="figure-1.png" />`).
+(`<ImageFigure src="figure-1.png" />`, `<Model3D src="model.glb" />`).
 
 ### Creating or updating an author
 

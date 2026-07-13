@@ -38,7 +38,6 @@ export function CopyButton({
         className,
       )}
       aria-label={label}
-      title={label}
     >
       {copied ? (
         <>

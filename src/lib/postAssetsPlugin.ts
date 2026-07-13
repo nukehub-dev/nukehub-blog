@@ -15,6 +15,7 @@ const ASSET_EXTENSIONS = new Set([
   ".svg",
   ".mp4",
   ".webm",
+  ".glb",
 ]);
 
 const MIME_TYPES: Record<string, string> = {
@@ -27,6 +28,7 @@ const MIME_TYPES: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".mp4": "video/mp4",
   ".webm": "video/webm",
+  ".glb": "model/gltf-binary",
 };
 
 function getMimeType(filePath: string): string {

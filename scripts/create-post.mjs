@@ -200,6 +200,7 @@ AVAILABLE MDX COMPONENTS
 - <Odysee url="https://odysee.com/$/embed/name/claimId" title="Optional title" />
 - <Video src="demo.mp4" title="Optional title" />
 - <ImageFigure src="diagram.png" alt="..." caption="..." />
+- <Model3D src="model.glb" caption="..." />
 - <Callout type="tip|note|warning|danger">...</Callout>
 - <Citation id="ref-id" /> (add matching entry to frontmatter references)
 */}
