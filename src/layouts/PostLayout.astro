@@ -161,7 +161,7 @@ const articleJsonLd = {
                 title={title}
                 url={`${SITE.url}${permalink}`}
                 authors={authors.map((a) => a.data.name)}
-                year={format(publishedDate, "yyyy")}
+                date={format(publishedDate, "yyyy-MM-dd")}
                 citationKey={post.id}
               />
             </div>
@@ -243,6 +243,33 @@ const articleJsonLd = {
             <References references={references} client:visible />
           )
         }
+
+        <div class="mt-12 border-t border-border/50 pt-6">
+          <a
+            href={`${SITE.repo}/edit/main/${post.filePath ?? `src/content/posts/${post.id}/index.mdx`}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary hover:underline"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              ></path>
+              <path d="m15 5 4 4"></path>
+            </svg>
+            Edit this page
+          </a>
+        </div>
       </article>
 
       <div class="hidden lg:block lg:w-56 lg:self-start lg:sticky lg:top-24">

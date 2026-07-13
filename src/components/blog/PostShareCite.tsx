@@ -21,7 +21,8 @@ interface PostShareCiteProps {
   url: string;
   /** Author display names. */
   authors: string[];
-  year: string;
+  /** ISO publication date (YYYY-MM-DD). */
+  date: string;
   /** BibTeX/RIS citation key (post id). */
   citationKey: string;
 }
@@ -42,7 +43,7 @@ export function PostShareCite({
   title,
   url,
   authors,
-  year,
+  date,
   citationKey,
 }: PostShareCiteProps) {
   const [shareOpen, setShareOpen] = React.useState(false);
@@ -62,12 +63,12 @@ export function PostShareCite({
         title,
         url,
         authors,
-        date: year,
+        date,
         type: "misc",
         source: SITE.name,
         publisher: SITE.name,
       }),
-    [citationKey, title, url, authors, year],
+    [citationKey, title, url, authors, date],
   );
   const [formatId, setFormatId] = React.useState<CopyFormat["id"]>("text");
   const currentFormat = formats.find((f) => f.id === formatId) ?? formats[0];

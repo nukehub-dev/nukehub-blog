@@ -309,8 +309,14 @@ Every post automatically gets **Share** and **Cite** controls in its header
 meta row — no author action needed. Share offers copy-link, X, Bluesky,
 Mastodon (via an instance picker), LinkedIn, and email (plus the system share
 sheet where the browser supports it). Cite opens a dialog with Text / BibTeX /
-RIS formats generated from the post's own metadata (title, authors, date,
-URL), using the same formatters as the references copy menu.
+RIS formats generated from the post's own metadata (title, authors,
+publication date, URL), using the same formatters as the references copy menu.
+BibTeX and RIS also carry a retrieval date (`urldate` / `Y2`) since every
+citation points at a web source.
+
+Each post also ends with an **Edit this page** link to the source file on
+GitHub (`SITE.repo` in `src/data/site.ts`). The link only works for posts
+committed to the repository.
 
 ## Newsletter
 

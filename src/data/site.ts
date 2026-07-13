@@ -12,4 +12,6 @@ export const SITE = {
   locale: "en_US",
   twitterHandle: "@nukehub_org",
   ogImage: "/assets/images/nukehub.png",
+  /** Public source repo; used for the per-post "Edit this page" link. */
+  repo: "https://github.com/nukehub-dev/nukehub-blog",
 } as const;

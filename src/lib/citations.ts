@@ -41,12 +41,21 @@ function extractYear(date: string | undefined): string | undefined {
   return date?.match(/\d{4}/)?.[0];
 }
 
+/** ISO YYYY-MM-DD if the date string carries one. */
+function extractFullDate(date: string | undefined): string | undefined {
+  return date?.match(/\d{4}-\d{2}-\d{2}/)?.[0];
+}
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 // BibTeX field values must not contain literal braces.
 function bibtexValue(value: string): string {
   return value.replace(/[{}]/g, "");
 }
 
-export function formatBibTeX(ref: Reference): string {
+export function formatBibTeX(ref: Reference, accessed?: string): string {
   const type = ref.type ?? "misc";
   const lines = [`@${type}{${ref.id},`];
   lines.push(`  title = {${bibtexValue(ref.title)}},`);
@@ -55,6 +64,10 @@ export function formatBibTeX(ref: Reference): string {
   }
   const year = extractYear(ref.date);
   if (year) lines.push(`  year = {${year}},`);
+  const fullDate = extractFullDate(ref.date);
+  if (fullDate) {
+    lines.push(`  month = {${Number(fullDate.slice(5, 7))}},`);
+  }
   const venue = ref.publisher ?? ref.source;
   if (venue) {
     const field =
@@ -65,6 +78,7 @@ export function formatBibTeX(ref: Reference): string {
           : "publisher";
     lines.push(`  ${field} = {${bibtexValue(venue)}},`);
   }
+  if (accessed) lines.push(`  urldate = {${accessed}},`);
   lines.push(`  url = {${ref.url}}`, "}");
   return lines.join("\n");
 }
@@ -77,7 +91,7 @@ const RIS_TYPES: Record<ReferenceType, string> = {
   misc: "GEN",
 };
 
-export function formatRIS(ref: Reference): string {
+export function formatRIS(ref: Reference, accessed?: string): string {
   const type = ref.type ?? "misc";
   const lines = [`TY  - ${RIS_TYPES[type]}`, `TI  - ${ref.title}`];
   for (const author of ref.authors ?? []) {
@@ -85,17 +99,28 @@ export function formatRIS(ref: Reference): string {
   }
   const year = extractYear(ref.date);
   if (year) lines.push(`PY  - ${year}`);
+  const fullDate = extractFullDate(ref.date);
+  if (fullDate) lines.push(`DA  - ${fullDate.replaceAll("-", "/")}`);
   const venue = ref.publisher ?? ref.source;
   if (venue) lines.push(`${type === "article" ? "JO" : "PB"}  - ${venue}`);
-  lines.push(`UR  - ${ref.url}`, "ER  -");
+  lines.push(`UR  - ${ref.url}`);
+  if (accessed) lines.push(`Y2  - ${accessed.replaceAll("-", "/")}`);
+  lines.push("ER  -");
   return lines.join("\n");
 }
 
-/** All formats offered by the references copy menu, default first. */
-export function buildCopyFormats(ref: Reference): CopyFormat[] {
+/**
+ * All formats offered by the copy menus, default first. `accessed` is the
+ * retrieval date stamped into BibTeX (`urldate`) and RIS (`Y2`) since every
+ * reference is a web source; defaults to today.
+ */
+export function buildCopyFormats(
+  ref: Reference,
+  accessed: string = todayISO(),
+): CopyFormat[] {
   return [
     { id: "text", label: "Citation text", text: formatCitationText(ref) },
-    { id: "bibtex", label: "BibTeX", text: formatBibTeX(ref) },
-    { id: "ris", label: "RIS", text: formatRIS(ref) },
+    { id: "bibtex", label: "BibTeX", text: formatBibTeX(ref, accessed) },
+    { id: "ris", label: "RIS", text: formatRIS(ref, accessed) },
   ];
 }
