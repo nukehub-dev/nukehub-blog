@@ -53,9 +53,7 @@ export function PostShareCite({
   const shareRef = React.useRef<HTMLDivElement>(null);
   const shareToggleRef = React.useRef<HTMLButtonElement>(null);
   const shareMenuRef = React.useRef<HTMLDivElement>(null);
-  const timerRef = React.useRef<ReturnType<typeof window.setTimeout> | null>(
-    null,
-  );
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const formats = React.useMemo<CopyFormat[]>(
     () =>
@@ -101,7 +99,7 @@ export function PostShareCite({
   const flashCopied = (id: string) => {
     setCopied(id);
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => setCopied(null), 2000);
+    timerRef.current = setTimeout(() => setCopied(null), 2000);
   };
 
   const copyText = async (id: string, text: string) => {

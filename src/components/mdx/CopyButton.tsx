@@ -21,16 +21,14 @@ export function CopyButton({
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const toggleRef = React.useRef<HTMLButtonElement>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
-  const timerRef = React.useRef<ReturnType<typeof window.setTimeout> | null>(
-    null,
-  );
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const copy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = window.setTimeout(() => setCopied(false), 2000);
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       // Ignore clipboard errors.
     }
