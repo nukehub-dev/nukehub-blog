@@ -184,6 +184,7 @@ async function main() {
 
   const featured = await confirm("Feature this post?", false);
   const draft = await confirm("Start as a draft?", true);
+  const citable = await confirm("Enable the Cite button?", false);
   const coverName = (
     await ask("Cover image filename (e.g. hero.png, leave blank for none): ")
   ).trim();
@@ -207,7 +208,8 @@ author: ${author}
 coAuthors: ${frontmatterCoAuthors}
 tags: ${frontmatterTags}
 featured: ${featured}
-draft: ${draft}${coverImageFrontmatter}
+draft: ${draft}
+citable: ${citable}${coverImageFrontmatter}
 ---
 
 {/*
