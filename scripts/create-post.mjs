@@ -95,6 +95,27 @@ async function chooseOne(message, options) {
   }
 }
 
+async function chooseCoAuthors(message, options) {
+  if (options.length === 0) return [];
+
+  console.log(message);
+  options.forEach((opt, i) => {
+    console.log(`  ${i + 1}. ${opt}`);
+  });
+  console.log("  (enter numbers separated by commas, or leave blank to skip)");
+
+  const answer = (await ask("Co-authors: ")).trim();
+  if (!answer) return [];
+
+  const selected = answer
+    .split(",")
+    .map((s) => Number.parseInt(s.trim(), 10) - 1)
+    .filter((index) => index >= 0 && index < options.length)
+    .map((index) => options[index]);
+
+  return [...new Set(selected)];
+}
+
 async function confirm(question, defaultValue = false) {
   const suffix = defaultValue ? " [Y/n]: " : " [y/N]: ";
   const answer = (await ask(question + suffix)).trim().toLowerCase();
@@ -147,6 +168,10 @@ async function main() {
 
   const category = await chooseOne("Choose a category:", CATEGORIES);
   const author = await chooseOne("Choose an author:", authors);
+  const coAuthors = await chooseCoAuthors(
+    "Choose co-author(s):",
+    authors.filter((a) => a !== author),
+  );
 
   const tagsInput = (await ask("Tags (comma-separated, optional): ")).trim();
   const tags = tagsInput
@@ -169,6 +194,9 @@ async function main() {
   }
 
   const frontmatterTags = tags ? `["${tags}"]` : "[]";
+  const frontmatterCoAuthors = coAuthors.length
+    ? `["${coAuthors.join('", "')}"]`
+    : "[]";
 
   const content = `---
 title: ${title}
@@ -176,6 +204,7 @@ description: ${description}
 publishedDate: ${today()}
 category: ${category}
 author: ${author}
+coAuthors: ${frontmatterCoAuthors}
 tags: ${frontmatterTags}
 featured: ${featured}
 draft: ${draft}${coverImageFrontmatter}
@@ -184,7 +213,16 @@ draft: ${draft}${coverImageFrontmatter}
 {/*
 Welcome to your new post. Delete these comments as you go.
 
-MARKDOWN BASICS
+Full authoring guide
+---------------------
+See docs/authoring.md for the complete reference: frontmatter options,
+Markdown syntax, images, citations, math, tables, charts, 3-D models, and
+diagrams.
+
+Quick reference
+---------------
+
+### Markdown
 - Headings: ## H2, ### H3, etc. (the post title is already H1).
 - Paragraphs are separated by blank lines.
 - Bold: **important**, italic: *emphasis*, inline code: \`code\`.
@@ -193,12 +231,12 @@ MARKDOWN BASICS
 - Code blocks: wrap with ${"```"}language ... ${"```"}.
 - Tables, blockquotes, and horizontal rules work too.
 
-IMAGES
+### Images and assets
 - Drop image files into this folder (src/content/posts/${slug}/).
 - Reference them by filename only, e.g. src="diagram.png".
 - For figures with captions and automatic aspect-ratio detection, use ImageFigure.
 
-AVAILABLE MDX COMPONENTS
+### Available MDX components
 - <YouTube id="VIDEO_ID" title="Optional title" />
 - <Odysee url="https://odysee.com/$/embed/name/claimId" title="Optional title" />
 - <Video src="demo.mp4" title="Optional title" />
@@ -206,6 +244,26 @@ AVAILABLE MDX COMPONENTS
 - <Model3D src="model.glb" caption="..." />
 - <Callout type="tip|note|warning|danger">...</Callout>
 - <Citation id="ref-id" /> (add matching entry to frontmatter references)
+- <InlineMath math="..." /> and <Math math="..." />
+- <DataTable columns={...} data={...} caption="..." />
+- <Plotly data={...} layout={...} />
+- <Mermaid chart={\`...\`} />
+
+### Useful optional frontmatter fields
+- updatedDate: YYYY-MM-DD
+- coAuthors: ["another-author"]
+- tags: ["tag1", "tag2"]
+- featured: true
+- draft: true
+- citable: true
+- coverImageFit: cover | contain | fill | none
+- coverImageTransparent: true
+- canonicalUrl: https://...
+- references:
+    - id: ref-id
+      title: ...
+      url: ...
+      source: ...
 */}
 
 ## Introduction
@@ -242,7 +300,7 @@ ${
 
 - Replace the placeholders above with your content.
 - Add images to \`src/content/posts/${slug}/\`.
-- Run \`npm run dev\` and open \`/posts/${slug}\` to preview (default URL: http://localhost:4321/posts/${slug}).
+- See docs/authoring.md for the full authoring guide (components, citations, math, charts, etc.).
 - When ready, set \`draft: false\` and run the build checks:
   \`npm run lint && npm run format:check && npm run build && npx astro check\`
 `;
@@ -260,8 +318,9 @@ ${
     console.log(`  1. Add images to ${postDir}/ when needed`);
   }
   console.log(`  2. Edit ${postPath}`);
+  console.log(`  3. See docs/authoring.md for the full authoring guide`);
   console.log(
-    `  3. Run \`npm run dev\` and open /posts/${slug} to preview (default URL: http://localhost:4321/posts/${slug})`,
+    `  4. Run \`npm run dev\` and open /posts/${slug} to preview (default URL: http://localhost:4321/posts/${slug})`,
   );
 }
 
