@@ -58,6 +58,9 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `NewsletterSignup` (subscribe/unsubscribe form with optional `source` prop),
   `PostShareCite` (Share menu on every post; Cite dialog only when the post
   sets `citable: true`), etc.
+- `src/components/illustrations/` — self-contained SVG illustration
+  components copied from `nukehub.org` (e.g. `ReactorCore404` for the 404
+  page). Keep them verbatim; all styling is scoped inside each component.
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
   `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`, `Tabs`, `Steps`,

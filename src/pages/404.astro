@@ -1,18 +1,120 @@
 ---
-import PageLayout from "@layouts/PageLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { AlertTriangle } from "lucide-react";
+import ReactorCore404 from "@components/illustrations/ReactorCore404.astro";
 ---
 
-<PageLayout title="Page Not Found" permalink="/404">
-  <div class="py-20 text-center">
-    <h1 class="text-6xl font-bold tracking-tight text-primary">404</h1>
-    <p class="mt-4 text-lg text-muted-foreground">
-      The page you are looking for does not exist.
-    </p>
-    <a
-      href="/"
-      class="mt-6 inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hover:brightness-110"
+<BaseLayout
+  title="404 — Lost in the Reactor"
+  description="Looks like you've wandered into an unstable plasma field. Let's get you back to a safer orbit."
+  permalink="/404"
+  showFooter={false}
+>
+  <section
+    class="relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center overflow-hidden px-4 text-center"
+  >
+    {/* Ambient reactor glow */}
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.07]"
+      aria-hidden="true"
+      style="background: radial-gradient(circle at 50% 48%, var(--primary) 0%, transparent 55%);"
     >
-      Go back home
-    </a>
-  </div>
-</PageLayout>
+    </div>
+
+    {/* Code badge */}
+    <div class="relative z-10 mb-6 animate-text-reveal animate-text-reveal-1">
+      <span
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary"
+      >
+        <AlertTriangle size={16} />
+        Error 404
+      </span>
+    </div>
+
+    {/* Animated reactor illustration */}
+    <div
+      class="relative z-10 mb-10 flex h-64 w-64 items-center justify-center animate-reactor-entrance sm:h-80 sm:w-80"
+    >
+      <ReactorCore404 />
+    </div>
+
+    {/* Message */}
+    <h1
+      class="relative z-10 max-w-lg text-3xl font-semibold tracking-tight text-foreground animate-text-reveal animate-text-reveal-2 sm:text-5xl"
+    >
+      Lost in the reactor
+    </h1>
+    <p
+      class="relative z-10 mt-3 max-w-md text-base text-muted-foreground animate-text-reveal animate-text-reveal-3 sm:text-lg"
+    >
+      The magnetic containment field couldn't locate this page. It may have
+      drifted into an unstable orbit.
+    </p>
+
+    {/* Status indicators */}
+    <div
+      class="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground animate-text-reveal animate-text-reveal-3"
+    >
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse"
+          aria-hidden="true"></span>
+        Plasma unstable
+      </span>
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+          aria-hidden="true"></span>
+        Re-routing available
+      </span>
+    </div>
+
+    {/* CTA */}
+    <div
+      class="relative z-10 mt-10 flex flex-col items-center gap-3 animate-text-reveal animate-text-reveal-3 sm:flex-row"
+    >
+      <a
+        href="/"
+        class="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      >
+        Return to safe orbit
+      </a>
+      <a
+        href="/posts"
+        class="inline-flex items-center justify-center rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+      >
+        Browse posts
+      </a>
+    </div>
+
+    {/* Decorative particles */}
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        Array.from({ length: 24 }).map((_, i) => {
+          const left = 10 + ((i * 37) % 80);
+          const top = 15 + ((i * 53) % 70);
+          const delay = (i * 0.12) % 3;
+          const duration = 2 + ((i * 0.23) % 3);
+          return (
+            <span
+              class="absolute h-1 w-1 rounded-full bg-primary/30"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                animation: `pulse-slow ${duration}s ease-in-out infinite`,
+                animationDelay: `${delay}s`,
+              }}
+            />
+          );
+        })
+      }
+    </div>
+  </section>
+</BaseLayout>
