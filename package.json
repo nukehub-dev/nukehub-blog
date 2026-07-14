@@ -12,6 +12,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,astro,css,scss,json,md,yml,yaml}\" \"docs/**/*.{md,yml,yaml}\" \"*.{json,md,yml,yaml}\" \".github/**/*.{yml,yaml}\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "check": "astro check",
     "preview": "astro preview --host",
     "create:post": "node scripts/create-post.mjs",
     "create:author": "node scripts/create-author.mjs",

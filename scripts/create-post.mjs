@@ -302,7 +302,7 @@ ${
 - Add images to \`src/content/posts/${slug}/\`.
 - See docs/authoring.md for the full authoring guide (components, citations, math, charts, etc.).
 - When ready, set \`draft: false\` and run the build checks:
-  \`npm run lint && npm run format:check && npm run build && npx astro check\`
+  \`npm run lint && npm run format:check && npm run build && npm run check\`
 `;
 
   await mkdir(postDir, { recursive: true });

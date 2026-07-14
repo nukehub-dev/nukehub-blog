@@ -129,7 +129,7 @@ Use the `draft` frontmatter flag to control publication. Do not use a separate
 
 ```bash
 npm run build   # schema errors fail the build
-npx astro check
+npm run check
 ```
 
 ## Child NAD Index

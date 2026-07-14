@@ -119,7 +119,7 @@ checks:
 npm run lint            # eslint . (zero errors required)
 npm run format:check    # prettier check on src/** and root configs
 npm run build           # astro build
-npx astro check         # typecheck
+npm run check         # typecheck
 ```
 
 Notes:

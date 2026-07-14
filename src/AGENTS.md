@@ -135,7 +135,7 @@ See the root NAD "Before committing" for the canonical checks:
 npm run lint
 npm run format:check
 npm run build
-npx astro check
+npm run check
 ```
 
 ## Child NAD Index
