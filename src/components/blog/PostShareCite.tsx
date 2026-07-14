@@ -25,6 +25,8 @@ interface PostShareCiteProps {
   date: string;
   /** BibTeX/RIS citation key (post id). */
   citationKey: string;
+  /** Show the Cite button + dialog. Posts opt in via `citable` frontmatter. */
+  citable?: boolean;
 }
 
 const TRIGGER_CLASS = cn(
@@ -45,6 +47,7 @@ export function PostShareCite({
   authors,
   date,
   citationKey,
+  citable = false,
 }: PostShareCiteProps) {
   const [shareOpen, setShareOpen] = React.useState(false);
   const [citeOpen, setCiteOpen] = React.useState(false);
@@ -215,68 +218,72 @@ export function PostShareCite({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={() => setCiteOpen(true)}
-        className={TRIGGER_CLASS}
-        aria-haspopup="dialog"
-      >
-        <Quote className="h-3.5 w-3.5" />
-        <span>Cite</span>
-      </button>
+      {citable && (
+        <>
+          <button
+            type="button"
+            onClick={() => setCiteOpen(true)}
+            className={TRIGGER_CLASS}
+            aria-haspopup="dialog"
+          >
+            <Quote className="h-3.5 w-3.5" />
+            <span>Cite</span>
+          </button>
 
-      <Dialog open={citeOpen} onOpenChange={setCiteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cite this post</DialogTitle>
-            <DialogDescription>{title}</DialogDescription>
-          </DialogHeader>
-          <DialogClose />
-          <div className="space-y-3 px-6 pb-2">
-            <div
-              role="tablist"
-              aria-label="Citation format"
-              className="flex gap-1 rounded-lg bg-muted p-1"
-            >
-              {formats.map((format) => (
-                <button
-                  key={format.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={format.id === currentFormat.id}
-                  onClick={() => setFormatId(format.id)}
-                  className={cn(
-                    "flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                    format.id === currentFormat.id
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
+          <Dialog open={citeOpen} onOpenChange={setCiteOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Cite this post</DialogTitle>
+                <DialogDescription>{title}</DialogDescription>
+              </DialogHeader>
+              <DialogClose />
+              <div className="space-y-3 px-6 pb-2">
+                <div
+                  role="tablist"
+                  aria-label="Citation format"
+                  className="flex gap-1 rounded-lg bg-muted p-1"
                 >
-                  {format.label}
-                </button>
-              ))}
-            </div>
-            <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-muted/50 p-3 text-xs leading-relaxed text-foreground">
-              {currentFormat.text}
-            </pre>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={() => copyText(currentFormat.id, currentFormat.text)}
-            >
-              {copied === currentFormat.id ? (
-                <>
-                  <Check className="h-3.5 w-3.5" />
-                  <span>Copied</span>
-                </>
-              ) : (
-                <span>Copy {currentFormat.label}</span>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  {formats.map((format) => (
+                    <button
+                      key={format.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={format.id === currentFormat.id}
+                      onClick={() => setFormatId(format.id)}
+                      className={cn(
+                        "flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                        format.id === currentFormat.id
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {format.label}
+                    </button>
+                  ))}
+                </div>
+                <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-muted/50 p-3 text-xs leading-relaxed text-foreground">
+                  {currentFormat.text}
+                </pre>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => copyText(currentFormat.id, currentFormat.text)}
+                >
+                  {copied === currentFormat.id ? (
+                    <>
+                      <Check className="h-3.5 w-3.5" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <span>Copy {currentFormat.label}</span>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </div>
   );
 }

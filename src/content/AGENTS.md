@@ -32,8 +32,8 @@ additions/edits belong here.
   - Required fields: `title`, `description`, `publishedDate`, `category`,
     `author`.
   - Optional fields: `updatedDate`, `coAuthors`, `tags`, `featured`, `draft`,
-    `coverImage`, `coverImageFit`, `coverImageTransparent`, `canonicalUrl`,
-    `references`.
+    `citable`, `coverImage`, `coverImageFit`, `coverImageTransparent`,
+    `canonicalUrl`, `references`.
   - `coverImage` is a filename inside the post folder; it is resolved to
     `/assets/images/posts/<slug>/<file>`. Absolute paths still work for external
     images or shared public assets.
@@ -54,6 +54,8 @@ additions/edits belong here.
   - `author` references an entry id from the `authors` collection.
   - `draft: true` posts are excluded from production builds but still
     available in development.
+  - `citable: true` shows the "Cite" button (citation copy dialog) in the
+    post header. Default `false`; the Share menu always renders.
 - `authors` (yml/yaml) — author profiles.
   - Required: `name`.
   - Optional: `bio`, `avatar`, `role`, `organization`, `location`, `email`,

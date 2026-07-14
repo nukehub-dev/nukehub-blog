@@ -255,6 +255,7 @@ flowchart TD
 | `tags`                  | No       | string[] | Default `[]`                                                            |
 | `featured`              | No       | boolean  | Default `false`                                                         |
 | `draft`                 | No       | boolean  | Default `false`; excluded from production builds                        |
+| `citable`               | No       | boolean  | Show the "Cite" button (copy-able citation formats). Default `false`    |
 | `coverImage`            | No       | string   | Image filename inside the post folder                                   |
 | `coverImageFit`         | No       | enum     | `cover`, `contain`, `fill`, `none`. Default `cover`                     |
 | `coverImageTransparent` | No       | boolean  | Remove the default gray background. Default `false`                     |

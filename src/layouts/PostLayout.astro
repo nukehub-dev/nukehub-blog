@@ -41,6 +41,7 @@ const {
   coverImageTransparent,
   canonicalUrl,
   references,
+  citable,
 } = post.data;
 
 const fit = coverImageFit ?? "cover";
@@ -163,6 +164,7 @@ const articleJsonLd = {
                 authors={authors.map((a) => a.data.name)}
                 date={format(publishedDate, "yyyy-MM-dd")}
                 citationKey={post.id}
+                citable={citable}
               />
             </div>
           </div>

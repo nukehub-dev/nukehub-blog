@@ -104,6 +104,8 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    // Opt-in: show the "Cite" button (citation copy dialog) on the post page.
+    citable: z.boolean().default(false),
     // Relative filename inside the post folder (e.g. hero.png). Absolute
     // paths still work for external images or shared public assets.
     coverImage: z.string().optional(),
