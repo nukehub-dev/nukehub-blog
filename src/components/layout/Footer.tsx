@@ -1,7 +1,8 @@
-import { footerColumns, footerLegal } from "@data/footer";
+import { footerColumns, footerLegal, socialLinks } from "@data/footer";
 import { SITE } from "@data/site";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
+import { Tooltip } from "@components/ui/Tooltip";
 import { NewsletterSignup } from "@components/blog/NewsletterSignup";
 import { ArrowUpRight } from "lucide-react";
 
@@ -83,6 +84,30 @@ export function Footer() {
                     );
                   })}
                 </ul>
+                {col.title === "Connect" && socialLinks.length > 0 && (
+                  <div className="mt-5">
+                    <p className="mb-2 text-xs font-medium text-muted-foreground">
+                      Follow us
+                    </p>
+                    <ul className="flex flex-wrap gap-2">
+                      {socialLinks.map((social) => (
+                        <li key={social.name}>
+                          <Tooltip content={social.name}>
+                            <a
+                              href={social.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                              aria-label={social.name}
+                            >
+                              <BrandIcon name={social.name} size={18} />
+                            </a>
+                          </Tooltip>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
           </div>

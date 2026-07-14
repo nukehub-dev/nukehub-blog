@@ -71,20 +71,15 @@ export const footerColumns: FooterColumn[] = [
         newpage: true,
         icon: MessagesSquare,
       },
-      {
-        title: "LinkedIn",
-        url: "https://www.linkedin.com/company/nukehub",
-        newpage: true,
-        brandIcon: "linkedin",
-      },
-      {
-        title: "GitHub",
-        url: "https://github.com/nukehub-dev",
-        newpage: true,
-        brandIcon: "github",
-      },
     ],
   },
+];
+
+export const socialLinks: { name: BrandIconProps["name"]; url: string }[] = [
+  { name: "linkedin", url: "https://www.linkedin.com/company/nukehub" },
+  { name: "bluesky", url: "https://bsky.app/profile/nukehub.org" },
+  { name: "mastodon", url: "https://mastodon.social/@nukehub" },
+  { name: "github", url: "https://github.com/nukehub-dev" },
 ];
 
 export const footerLegal: FooterLink[] = [
@@ -112,8 +107,3 @@ export const footerLegal: FooterLink[] = [
     newpage: true,
   },
 ];
-
-export const socialLinks = [
-  { name: "github", url: "https://github.com/nukehub-dev" },
-  { name: "linkedin", url: "https://www.linkedin.com/company/nukehub" },
-] as const;
