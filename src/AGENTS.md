@@ -55,8 +55,9 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `MagneticButton`. Also `decorations/FloatingParticles`.
 - `src/components/blog/` — blog-specific components: `PostCard`, `PostList`,
   `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, `TableOfContents`,
-  `NewsletterSignup`, `PostShareCite` (Share menu on every post; Cite dialog
-  only when the post sets `citable: true`), etc.
+  `NewsletterSignup` (subscribe/unsubscribe form with optional `source` prop),
+  `PostShareCite` (Share menu on every post; Cite dialog only when the post
+  sets `citable: true`), etc.
 - `src/components/mdx/` — MDX shortcodes available inside post bodies:
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
   `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`, `Tabs`, `Steps`,

@@ -32,6 +32,8 @@ interface NewsletterSignupProps {
   className?: string;
   variant?: "default" | "compact" | "card";
   layout?: "inline" | "button";
+  source?: string;
+  allowUnsubscribe?: boolean;
 }
 
 const API_URL = import.meta.env.PUBLIC_API_URL ?? "";
@@ -43,6 +45,8 @@ export function NewsletterSignup({
   className,
   variant = "default",
   layout = "inline",
+  source = "newsletter",
+  allowUnsubscribe = true,
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<
@@ -50,6 +54,7 @@ export function NewsletterSignup({
   >("idle");
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"subscribe" | "unsubscribe">("subscribe");
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
@@ -89,7 +94,15 @@ export function NewsletterSignup({
     widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
       sitekey: TURNSTILE_SITE_KEY,
       theme: "auto",
+      size: "invisible",
+      appearance: "interaction-only",
     });
+  };
+
+  const resetWidget = () => {
+    if (widgetIdRef.current && window.turnstile?.reset) {
+      window.turnstile.reset(widgetIdRef.current);
+    }
   };
 
   const getTurnstileToken = (): string | null => {
@@ -99,12 +112,15 @@ export function NewsletterSignup({
     return input?.value ?? null;
   };
 
+  const isValidEmail = (value: string) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value.trim());
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
 
-    const trimmed = email.trim();
-    if (trimmed === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    const trimmed = email.trim().toLowerCase();
+    if (trimmed === "" || !isValidEmail(trimmed)) {
       setStatus("error");
       setMessage("Please enter a valid email address.");
       return;
@@ -126,11 +142,20 @@ export function NewsletterSignup({
     setStatus("loading");
     setMessage("");
 
+    const endpoint =
+      mode === "subscribe"
+        ? `${API_URL}/newsletter`
+        : `${API_URL}/newsletter/unsubscribe`;
+    const body =
+      mode === "subscribe"
+        ? { email: trimmed, turnstileToken, source }
+        : { email: trimmed, turnstileToken };
+
     try {
-      const response = await fetch(`${API_URL}/newsletter`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, turnstileToken }),
+        body: JSON.stringify(body),
       });
 
       const data = (await response.json()) as {
@@ -141,8 +166,14 @@ export function NewsletterSignup({
 
       if (response.ok && data.success) {
         setStatus("success");
-        setMessage(data.message ?? "Thanks for subscribing!");
+        setMessage(
+          data.message ??
+            (mode === "subscribe"
+              ? "Thanks for subscribing!"
+              : "You have been unsubscribed."),
+        );
         setEmail("");
+        resetWidget();
       } else {
         setStatus("error");
         setMessage(
@@ -157,29 +188,44 @@ export function NewsletterSignup({
     }
   };
 
+  const toggleMode = () => {
+    setMode((prev) => (prev === "subscribe" ? "unsubscribe" : "subscribe"));
+    setStatus("idle");
+    setMessage("");
+    setEmail("");
+    resetWidget();
+  };
+
   const isCompact = variant === "compact";
   const isCard = variant === "card";
 
-  const header = (title || description) && (
+  const currentTitle =
+    mode === "subscribe" ? title : "Unsubscribe from newsletter";
+  const currentDescription =
+    mode === "subscribe"
+      ? description
+      : "Enter your email to stop receiving newsletter emails.";
+
+  const header = (currentTitle || currentDescription) && (
     <div>
-      {title && (
+      {currentTitle && (
         <h3
           className={cn(
             "font-semibold tracking-tight",
             isCompact ? "text-sm" : "text-base",
           )}
         >
-          {title}
+          {currentTitle}
         </h3>
       )}
-      {description && (
+      {currentDescription && (
         <p
           className={cn(
             "mt-0.5 text-muted-foreground",
             isCompact ? "text-xs" : "text-sm",
           )}
         >
-          {description}
+          {currentDescription}
         </p>
       )}
     </div>
@@ -208,7 +254,29 @@ export function NewsletterSignup({
           />
         </div>
         {TURNSTILE_SITE_KEY !== "" && (
-          <div ref={turnstileRef} className="cf-turnstile" />
+          <>
+            <div ref={turnstileRef} className="cf-turnstile" />
+            <p className="text-[11px] leading-snug text-muted-foreground/60">
+              Protected by Cloudflare Turnstile.{" "}
+              <a
+                href="https://www.cloudflare.com/privacypolicy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-muted-foreground"
+              >
+                Privacy
+              </a>
+              {" · "}
+              <a
+                href="https://www.cloudflare.com/website-terms/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-muted-foreground"
+              >
+                Terms
+              </a>
+            </p>
+          </>
         )}
       </div>
       <Button
@@ -218,7 +286,13 @@ export function NewsletterSignup({
         size={isCompact ? "sm" : "default"}
         className="shrink-0"
       >
-        {status === "success" ? "Subscribed" : "Subscribe"}
+        {status === "success"
+          ? mode === "subscribe"
+            ? "Subscribed"
+            : "Unsubscribed"
+          : mode === "subscribe"
+            ? "Subscribe"
+            : "Unsubscribe"}
       </Button>
     </form>
   );
@@ -243,6 +317,18 @@ export function NewsletterSignup({
     </div>
   );
 
+  const modeToggle = allowUnsubscribe && (
+    <button
+      type="button"
+      onClick={toggleMode}
+      className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {mode === "subscribe"
+        ? "Already subscribed? Unsubscribe instead."
+        : "Want to subscribe? Subscribe instead."}
+    </button>
+  );
+
   if (layout === "button") {
     return (
       <div className={className}>
@@ -258,17 +344,15 @@ export function NewsletterSignup({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {title || "Subscribe to our newsletter"}
+                {currentTitle || "Subscribe to our newsletter"}
               </DialogTitle>
-              <DialogDescription>
-                {description ||
-                  "Get the latest updates delivered to your inbox."}
-              </DialogDescription>
+              <DialogDescription>{currentDescription}</DialogDescription>
             </DialogHeader>
             <DialogClose />
             <div className="px-6 pb-6">
               {form}
               {feedback}
+              {modeToggle}
             </div>
           </DialogContent>
         </Dialog>
@@ -290,6 +374,7 @@ export function NewsletterSignup({
         {form}
       </div>
       {feedback}
+      {modeToggle}
     </div>
   );
 }

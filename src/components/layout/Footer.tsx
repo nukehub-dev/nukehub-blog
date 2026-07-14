@@ -34,6 +34,7 @@ export function Footer() {
                 description="Weekly roundups of new posts and community updates."
                 variant="compact"
                 layout="button"
+                source="footer"
               />
             </div>
           </div>
