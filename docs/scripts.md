@@ -12,3 +12,8 @@
 | `npm run format`        | Format files with Prettier |
 | `npm run format:check`  | Check formatting           |
 | `npm run check`         | Type-check Astro files     |
+
+`npm run build` automatically runs `prebuild` first
+(`scripts/inject-sw-cache.js`), which stamps a versioned cache name into
+`public/sw.js.tpl` and writes the service worker to `public/sw.js`
+(gitignored, regenerated on every build).

@@ -39,10 +39,11 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   - `authors/[author].astro` — author pages.
   - `rss.xml.js` — RSS feed.
   - `404.astro` — not found page.
+  - `offline.astro` — offline fallback served by the service worker.
 - `src/layouts/` — page shells.
   - `BaseLayout.astro` — every page funnels through here. Owns the `<head>`,
     SEO meta, RSS alternate link, theme init script, skip link, header/footer
-    frame, and scroll-to-top.
+    frame, scroll-to-top, and production-only service worker registration.
   - `PageLayout.astro` — generic prose-content wrapper over BaseLayout.
   - `PostLayout.astro` — blog-post wrapper: cover image, title, meta, author(s),
     tags, table of contents, references, related posts.

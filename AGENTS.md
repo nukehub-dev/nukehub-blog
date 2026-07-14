@@ -134,7 +134,8 @@ Notes:
 High-level layout; see the Child NAD Index below for domain-specific details.
 
 - `astro.config.mjs` — Astro config, integrations, and Vite aliases.
-- `src/pages/` — Astro routes: home, posts, categories, authors, RSS, 404.
+- `src/pages/` — Astro routes: home, posts, categories, authors, RSS, 404,
+  offline.
 - `src/layouts/` — page shells: `BaseLayout`, `PageLayout`, `PostLayout`.
 - `src/components/` — shared UI primitives, layout chrome, and blog-specific
   components.
@@ -143,7 +144,10 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `src/lib/` — shared TypeScript utilities, theme engine, and post helpers.
 - `src/data/` — typed static data: nav, footer, site metadata.
 - `src/styles/` — Tailwind v4 theme entrypoint.
-- `public/` — static assets: fonts, favicon, images, robots.txt.
+- `public/` — static assets: fonts, favicon, images, robots.txt, PWA
+  manifest, and the service worker template (`sw.js.tpl`).
+- `scripts/` — repo tooling: post/author scaffolding and the prebuild
+  service worker cache stamp (`inject-sw-cache.js`).
 - `docs/` — project documentation for contributors and content authors.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `wrangler.toml` — Cloudflare Pages compatibility and output config.
