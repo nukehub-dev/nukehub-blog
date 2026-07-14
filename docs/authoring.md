@@ -205,6 +205,13 @@ import spectrum from "./spectrum.json";
 Note the data is serialized into the page HTML, so keep imports below roughly
 100 KB.
 
+Charts render client-side, so they appear as a placeholder in the Markdown
+version of the page (served when clients request `text/markdown`). The
+Markdown build replaces each chart with an HTML comment containing the chart
+spec (data + layout), so agents still get the numbers. Pair important charts
+with a `<DataTable />` built from the same dataset — the table is
+server-rendered and carries the numbers in every format.
+
 ### 3-D models
 
 Use `<Model3D />` to embed an interactive glTF viewer. Drop a `.glb` file into
@@ -223,7 +230,8 @@ Top / Side views, and expand the viewer to fullscreen (Esc to exit).
 Optional props: `aspect` (`video`, `square`, `portrait`, `wide`, `auto`) and
 `autoRotate` (turntable rotation on load; default off). Convert STEP/B-rep
 geometry to `.glb` offline (e.g. with cadquery + trimesh) and keep files under
-~5 MB.
+~5 MB. In the Markdown version, the viewer is replaced by an HTML comment
+pointing to the fetchable `.glb` URL.
 
 ### Diagrams
 

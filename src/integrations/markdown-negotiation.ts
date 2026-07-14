@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
 import TurndownService from "turndown";
+import { tables } from "turndown-plugin-gfm";
 
 /** Build artifacts to skip entirely (by exact filename in dist/). */
 const EXACT_SKIP = new Set(["404.html", "silent-check-sso.html", "rss.xml"]);
@@ -117,6 +118,95 @@ function classString(node: any): string {
   return "";
 }
 
+/**
+ * Inverse of Astro's island-props serialization (see
+ * astro/dist/runtime/server/serialize.js): every prop value is wrapped as
+ * `[tag, value]` — 0 = scalar or plain object, 1 = array; the remaining tags
+ * (Date, URL, BigInt, …) keep their raw string form.
+ */
+function unwrapIslandProp(value: unknown): unknown {
+  if (
+    !Array.isArray(value) ||
+    value.length === 0 ||
+    typeof value[0] !== "number"
+  ) {
+    return value;
+  }
+  const [tag, inner] = value as [number, unknown];
+  if (tag === 0) {
+    if (inner !== null && typeof inner === "object" && !Array.isArray(inner)) {
+      return Object.fromEntries(
+        Object.entries(inner as Record<string, unknown>).map(([k, v]) => [
+          k,
+          unwrapIslandProp(v),
+        ]),
+      );
+    }
+    return inner;
+  }
+  if (tag === 1 && Array.isArray(inner)) {
+    return inner.map(unwrapIslandProp);
+  }
+  return inner;
+}
+
+/** Parse an astro-island `props` attribute back into plain prop values. */
+function parseIslandProps(raw: string | null): Record<string, unknown> {
+  if (!raw) return {};
+  try {
+    const wrapped = JSON.parse(raw) as Record<string, unknown>;
+    return Object.fromEntries(
+      Object.entries(wrapped).map(([k, v]) => [k, unwrapIslandProp(v)]),
+    );
+  } catch {
+    return {};
+  }
+}
+
+/** Above this size the chart spec is referenced instead of inlined. */
+const CHART_SPEC_INLINE_LIMIT = 10_000;
+
+/**
+ * Plotly charts render client-side only, so the SSR HTML is a loading
+ * placeholder and the dataset never reaches the Markdown. Emit an HTML
+ * comment carrying the chart spec (or, for large specs, a pointer to the
+ * HTML page that embeds it) so agents know where to fetch the data.
+ */
+function plotlyPointer(props: Record<string, unknown>): string {
+  const spec: Record<string, unknown> = {};
+  if (props.data !== undefined) spec.data = props.data;
+  if (props.layout !== undefined) spec.layout = props.layout;
+  const json = JSON.stringify(spec);
+
+  const lines = ["<!--", "Interactive Plotly chart (requires JavaScript)."];
+  if (json && json !== "{}" && json.length <= CHART_SPEC_INLINE_LIMIT) {
+    lines.push("Chart spec (data + layout):", json);
+  } else if (json && json !== "{}") {
+    lines.push(
+      `Chart spec is ${json.length} bytes; fetch the HTML version of this page and read the astro-island props JSON to retrieve it.`,
+    );
+  }
+  lines.push("-->");
+  return `\n\n${lines.join("\n")}\n\n`;
+}
+
+/**
+ * 3-D models also render client-side. The .glb file is a fetchable URL, so
+ * the comment just points agents at it (and preserves the caption).
+ */
+function model3dPointer(props: Record<string, unknown>): string {
+  const src = typeof props.src === "string" ? props.src : "";
+  const caption = typeof props.caption === "string" ? props.caption : "";
+  const lines = [
+    "<!--",
+    "Interactive 3D model (glTF, requires JavaScript).",
+    ...(src ? [`Fetch the model file: ${src}`] : []),
+    ...(caption ? [`Caption: ${caption}`] : []),
+    "-->",
+  ];
+  return `\n\n${lines.join("\n")}\n\n`;
+}
+
 export default function markdownNegotiation(): AstroIntegration {
   return {
     name: "markdown-negotiation",
@@ -129,6 +219,9 @@ export default function markdownNegotiation(): AstroIntegration {
           emDelimiter: "*",
           linkStyle: "inlined",
         });
+        // GFM tables: SSR'd <table> output (DataTable, Markdown tables)
+        // becomes proper Markdown tables instead of flattened lines.
+        turndown.use(tables);
         turndown.remove(REMOVE_TAGS as any);
 
         // ---- Rule: drop UI chrome, aria-hidden decorations, stat placeholders ----
@@ -206,6 +299,31 @@ export default function markdownNegotiation(): AstroIntegration {
           },
         });
 
+        // ---- Rule: data pointers for client-side islands ----
+        // Interactive islands (Plotly charts, 3-D models) SSR as loading
+        // placeholders, so their data never reaches the Markdown. Replace the
+        // placeholder with an HTML comment telling agents where the data
+        // lives. Other islands keep their converted SSR content.
+        turndown.addRule("islandDataPointers", {
+          filter(node) {
+            if (node.nodeType !== 1) return false;
+            return (
+              (node as HTMLElement).tagName?.toLowerCase() === "astro-island"
+            );
+          },
+          replacement(content, node) {
+            const el = node as HTMLElement;
+            const component = el.getAttribute("component-export") ?? "";
+            if (component === "Plotly") {
+              return plotlyPointer(parseIslandProps(el.getAttribute("props")));
+            }
+            if (component === "Model3D") {
+              return model3dPointer(parseIslandProps(el.getAttribute("props")));
+            }
+            return content;
+          },
+        });
+
         const root = fileURLToPath(dir as URL);
         await walk(root, root, turndown);
         console.log(
@@ -261,6 +379,11 @@ async function walk(
           /(!\[[^\]]*\]\([^)\s]*\))(!\[)/g,
           "$1\n\n$2",
         );
+
+        // The GFM tables rule emits rows without a trailing blank line, so a
+        // caption or paragraph right after a table gets glued to the last row.
+        markdown = markdown.replace(/(^\|.*)\|(?=\S)/gm, "$1|\n\n");
+        markdown = markdown.replace(/(^\|.*\|$)\n(?!\|)/gm, "$1\n\n");
 
         markdown = collapseBlankLines(markdown);
         if (!markdown.trim()) return;

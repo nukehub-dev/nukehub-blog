@@ -14,3 +14,11 @@ declare module "plotly.js-dist-min" {
   import * as Plotly from "plotly.js";
   export default Plotly;
 }
+
+declare module "turndown-plugin-gfm" {
+  import type TurndownService from "turndown";
+  export const gfm: TurndownService.Plugin;
+  export const tables: TurndownService.Plugin;
+  export const strikethrough: TurndownService.Plugin;
+  export const taskListItems: TurndownService.Plugin;
+}
