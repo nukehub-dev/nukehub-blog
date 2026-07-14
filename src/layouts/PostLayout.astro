@@ -69,6 +69,20 @@ const authorEntries = await Promise.all(
     .map((id) => getEntry("authors", id)),
 );
 const authors = authorEntries.filter((a): a is Author => Boolean(a));
+const authorsWithDetails = authors.filter((a) => {
+  const { avatar, bio, role, organization, location, email, url, links } =
+    a.data;
+  return (
+    avatar ||
+    bio ||
+    role ||
+    organization ||
+    location ||
+    email ||
+    url ||
+    (links && Object.keys(links).length > 0)
+  );
+});
 const allPosts = await getCollection("posts");
 const relatedPosts = getRelatedPosts(post, allPosts, 3);
 const readingTime = getReadingTime(post.body ?? "");
@@ -177,13 +191,17 @@ const articleJsonLd = {
                     href={`/authors/${a.id}`}
                     class="group inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/50 px-3 py-1.5 text-sm transition-colors hover:border-primary/30 hover:bg-card"
                   >
-                    {a.data.avatar && (
+                    {a.data.avatar ? (
                       <img
                         src={a.data.avatar}
                         alt={a.data.name}
                         class="h-6 w-6 rounded-full object-cover"
                         loading="lazy"
                       />
+                    ) : (
+                      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-medium text-foreground">
+                        {a.data.name.charAt(0).toUpperCase()}
+                      </div>
                     )}
                     <span class="font-medium text-foreground group-hover:text-primary">
                       {a.data.name}
@@ -231,11 +249,16 @@ const articleJsonLd = {
         </div>
 
         {
-          authors.length > 0 && (
-            <div class="mt-12 space-y-6">
-              {authors.map((a) => (
-                <AuthorBio author={a} href={`/authors/${a.id}`} client:load />
-              ))}
+          authorsWithDetails.length > 0 && (
+            <div class="mt-12">
+              <h2 class="mb-4 text-xl font-semibold tracking-tight">
+                About the author{authorsWithDetails.length > 1 ? "s" : ""}
+              </h2>
+              <div class="flex flex-col gap-4">
+                {authorsWithDetails.map((a) => (
+                  <AuthorBio author={a} href={`/authors/${a.id}`} client:load />
+                ))}
+              </div>
             </div>
           )
         }

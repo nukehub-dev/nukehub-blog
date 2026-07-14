@@ -121,6 +121,30 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
 
   const NameHeading = <h3 className="font-semibold text-foreground">{name}</h3>;
 
+  function Avatar({ className: avatarClassName }: { className?: string }) {
+    if (avatar) {
+      return (
+        <Image
+          src={avatar}
+          alt={name}
+          aspect="auto"
+          rounded="full"
+          wrapperClassName={cn("h-16 w-16", avatarClassName)}
+        />
+      );
+    }
+    return (
+      <div
+        className={cn(
+          "flex h-16 w-16 items-center justify-center rounded-full bg-muted text-lg font-bold text-foreground",
+          avatarClassName,
+        )}
+      >
+        {name.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -128,26 +152,13 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
         className,
       )}
     >
-      {avatar &&
-        (href ? (
-          <a href={href} className="shrink-0">
-            <Image
-              src={avatar}
-              alt={name}
-              aspect="auto"
-              rounded="full"
-              wrapperClassName="h-16 w-16"
-            />
-          </a>
-        ) : (
-          <Image
-            src={avatar}
-            alt={name}
-            aspect="auto"
-            rounded="full"
-            wrapperClassName="h-16 w-16 shrink-0"
-          />
-        ))}
+      {href ? (
+        <a href={href} className="shrink-0">
+          <Avatar />
+        </a>
+      ) : (
+        <Avatar className="shrink-0" />
+      )}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           {href ? <a href={href}>{NameHeading}</a> : NameHeading}
