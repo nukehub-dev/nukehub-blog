@@ -127,6 +127,24 @@ async function main() {
     process.exit(1);
   }
 
+  const slug = slugify(title);
+  const postDir = path.join(POSTS_DIR, slug);
+  const postPath = path.join(postDir, "index.mdx");
+
+  if (await exists(postPath)) {
+    console.error(
+      `\nA post titled "${title}" already exists at ${postPath}. Aborting.`,
+    );
+    process.exit(1);
+  }
+
+  if (await exists(postDir)) {
+    console.error(
+      `\nA folder for "${slug}" already exists at ${postDir}. Aborting.`,
+    );
+    process.exit(1);
+  }
+
   const category = await chooseOne("Choose a category:", CATEGORIES);
   const author = await chooseOne("Choose an author:", authors);
 
@@ -144,15 +162,6 @@ async function main() {
   const coverName = (
     await ask("Cover image filename (e.g. hero.png, leave blank for none): ")
   ).trim();
-
-  const slug = slugify(title);
-  const postDir = path.join(POSTS_DIR, slug);
-  const postPath = path.join(postDir, "index.mdx");
-
-  if (await exists(postPath)) {
-    console.error(`\nA post already exists at ${postPath}. Aborting.`);
-    process.exit(1);
-  }
 
   let coverImageFrontmatter = "";
   if (coverName) {
@@ -233,7 +242,7 @@ ${
 
 - Replace the placeholders above with your content.
 - Add images to \`src/content/posts/${slug}/\`.
-- Run \`npm run dev\` and open http://localhost:4321/posts/${slug} to preview.
+- Run \`npm run dev\` and open \`/posts/${slug}\` to preview (default URL: http://localhost:4321/posts/${slug}).
 - When ready, set \`draft: false\` and run the build checks:
   \`npm run lint && npm run format:check && npm run build && npx astro check\`
 `;
@@ -251,7 +260,9 @@ ${
     console.log(`  1. Add images to ${postDir}/ when needed`);
   }
   console.log(`  2. Edit ${postPath}`);
-  console.log(`  3. Preview at http://localhost:4321/posts/${slug}`);
+  console.log(
+    `  3. Run \`npm run dev\` and open /posts/${slug} to preview (default URL: http://localhost:4321/posts/${slug})`,
+  );
 }
 
 main()
