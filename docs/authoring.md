@@ -241,6 +241,45 @@ flowchart TD
 />
 ```
 
+### Tabs
+
+Group related content with `<Tabs>` and `<Tab>`. Set the initially visible panel
+with `defaultValue`.
+
+```mdx
+<Tabs defaultValue="Linux">
+  <Tab label="Linux">Linux instructions here.</Tab>
+  <Tab label="macOS">macOS instructions here.</Tab>
+</Tabs>
+```
+
+### Steps
+
+Render a numbered sequence with `<Steps>` and `<Step>`. The numbers are added
+automatically.
+
+```mdx
+<Steps>
+  <Step>Install the package.</Step>
+  <Step>Configure the model.</Step>
+  <Step>Run the simulation.</Step>
+</Steps>
+```
+
+### File trees
+
+Use `<FileTree />` to show a directory structure. Pass an array of items; folders
+can contain `children`.
+
+```mdx
+<FileTree
+  items={[
+    { name: "src", children: [{ name: "components" }, { name: "pages" }] },
+    { name: "package.json" },
+  ]}
+/>
+```
+
 ## Frontmatter schema
 
 | Field                   | Required | Type     | Notes                                                                |
@@ -319,20 +358,6 @@ Each post also ends with an **Edit this page** link to the source file on
 GitHub (`SITE.repo` in `src/data/site.ts`). The link only works for posts
 committed to the repository.
 
-## Newsletter
-
-The blog uses the NukeHub API server for email subscriptions. To enable the
-signup form, set these environment variables:
-
-```bash
-PUBLIC_API_URL=http://localhost:3000
-PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
-```
-
-The API endpoint is `POST ${PUBLIC_API_URL}/newsletter` with JSON body
-`{ email, turnstileToken }`. The API server stores subscribers in SQLite and
-exposes admin endpoints for listing and exporting them.
-
 ## Authors
 
 Create or update an author with the interactive scaffold:
@@ -347,10 +372,10 @@ Authors are YAML files in `src/content/authors/`:
 name: Author Name
 bio: A short bio.
 role: Contributor
-organization: NukeHub
-location: Canada
-email: author@nukehub.org
-url: https://nukehub.org
+organization: Organization Name
+location: Author Country
+email: author@example.com
+url: https://example.com
 avatar: /assets/images/author.png
 links:
   github: username

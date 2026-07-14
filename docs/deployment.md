@@ -23,6 +23,20 @@ browser. See `.env.example` for the canonical list:
   newsletter signup).
 - `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
 
+### Newsletter
+
+The blog uses the NukeHub API server for email subscriptions. To enable the
+signup form, set:
+
+```bash
+PUBLIC_API_URL=http://localhost:3000
+PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+```
+
+The API endpoint is `POST ${PUBLIC_API_URL}/newsletter` with JSON body
+`{ email, turnstileToken }`. The API server stores subscribers in SQLite and
+exposes admin endpoints for listing and exporting them.
+
 ## CI
 
 GitHub Actions runs lint, format check, type check, and build on every push and
