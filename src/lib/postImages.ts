@@ -3,7 +3,7 @@
  *
  * - Absolute paths (`/assets/...` or `https://...`) are returned unchanged so
  *   legacy flat posts and external images keep working.
- * - Relative paths are expanded to `/assets/images/posts/<postId>/<src>`,
+ * - Relative paths are expanded to `/assets/posts/<postId>/<src>`,
  *   matching the Vite plugin that serves folder-based post assets.
  */
 export function resolvePostImage(
@@ -18,5 +18,5 @@ export function resolvePostImage(
   ) {
     return src;
   }
-  return `/assets/images/posts/${postId}/${src}`;
+  return `/assets/posts/${postId}/${src}`;
 }

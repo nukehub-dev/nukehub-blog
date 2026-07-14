@@ -35,7 +35,7 @@ additions/edits belong here.
     `citable`, `coverImage`, `coverImageFit`, `coverImageTransparent`,
     `canonicalUrl`, `references`.
   - `coverImage` is a filename inside the post folder; it is resolved to
-    `/assets/images/posts/<slug>/<file>`. Absolute paths still work for external
+    `/assets/posts/<slug>/<file>`. Absolute paths still work for external
     images or shared public assets.
   - `coverImageFit` accepts `cover`, `contain`, `fill`, or `none` (default
     `cover`).
@@ -122,7 +122,7 @@ Use the `draft` frontmatter flag to control publication. Do not use a separate
 - **Dates are coerced.** `publishedDate` accepts ISO strings (`YYYY-MM-DD`) and
   is coerced to a `Date` object.
 - **Image paths.** Use filenames (`hero.png`) and the build resolves them to
-  `/assets/images/posts/<slug>/hero.png`. Absolute paths still work for external
+  `/assets/posts/<slug>/hero.png`. Absolute paths still work for external
   images or shared public assets.
 
 ## Verification

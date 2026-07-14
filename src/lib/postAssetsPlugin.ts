@@ -3,7 +3,7 @@ import path from "node:path";
 import type { Plugin } from "vite";
 
 const POSTS_DIR = "src/content/posts";
-const ASSET_PREFIX = "/assets/images/posts/";
+const ASSET_PREFIX = "/assets/posts/";
 
 const ASSET_EXTENSIONS = new Set([
   ".png",
@@ -46,7 +46,7 @@ function isAssetFile(fileName: string): boolean {
  *
  * Authors place images next to `src/content/posts/<slug>/index.mdx` and
  * reference them by filename; the plugin maps
- * `/assets/images/posts/<slug>/<file>` to the source file.
+ * `/assets/posts/<slug>/<file>` to the source file.
  */
 export function postAssetsPlugin(): Plugin {
   return {
@@ -121,7 +121,7 @@ export function postAssetsPlugin(): Plugin {
           const source = await readFile(path.join(assetDir, file));
           this.emitFile({
             type: "asset",
-            fileName: `assets/images/posts/${slug}/${file}`,
+            fileName: `assets/posts/${slug}/${file}`,
             source,
           });
         }
