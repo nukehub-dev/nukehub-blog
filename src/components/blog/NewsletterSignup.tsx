@@ -53,6 +53,7 @@ export function NewsletterSignup({
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [message, setMessage] = useState("");
+  const [fieldError, setFieldError] = useState("");
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"subscribe" | "unsubscribe">("subscribe");
   const turnstileRef = useRef<HTMLDivElement>(null);
@@ -118,11 +119,12 @@ export function NewsletterSignup({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setFieldError("");
 
     const trimmed = email.trim().toLowerCase();
     if (trimmed === "" || !isValidEmail(trimmed)) {
-      setStatus("error");
-      setMessage("Please enter a valid email address.");
+      setStatus("idle");
+      setFieldError("Please enter a valid email address.");
       return;
     }
 
@@ -192,6 +194,7 @@ export function NewsletterSignup({
     setMode((prev) => (prev === "subscribe" ? "unsubscribe" : "subscribe"));
     setStatus("idle");
     setMessage("");
+    setFieldError("");
     setEmail("");
     resetWidget();
   };
@@ -248,11 +251,19 @@ export function NewsletterSignup({
             name="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setFieldError("");
+            }}
             disabled={status === "loading" || status === "success"}
             className={cn("pl-9", isCompact && "h-8 text-sm")}
           />
         </div>
+        {fieldError && (
+          <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+            {fieldError}
+          </p>
+        )}
         {TURNSTILE_SITE_KEY !== "" && (
           <>
             <div ref={turnstileRef} className="cf-turnstile" />
