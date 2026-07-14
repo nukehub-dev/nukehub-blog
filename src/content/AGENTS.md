@@ -46,11 +46,10 @@ additions/edits belong here.
     `inproceedings`, `techreport`, `misc`; default `misc`), and `publisher`.
     Formatters live in `src/lib/citations.ts`.
   - `category` must be one of:
-    - `news`
+    - `updates`
     - `tutorials`
     - `nuclear-industry`
     - `community`
-    - `project-updates`
   - `author` references an entry id from the `authors` collection.
   - `draft: true` posts are excluded from production builds but still
     available in development.

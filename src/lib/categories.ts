@@ -1,5 +1,5 @@
 export type CategorySlug =
-  "news" | "tutorials" | "nuclear-industry" | "community" | "project-updates";
+  "updates" | "tutorials" | "nuclear-industry" | "community";
 
 export interface CategoryMeta {
   slug: CategorySlug;
@@ -11,11 +11,12 @@ export interface CategoryMeta {
 
 export const CATEGORIES: CategoryMeta[] = [
   {
-    slug: "news",
-    label: "News",
-    description: "Announcements and updates from NukeHub and the community.",
-    icon: "newspaper",
-    accent: "red",
+    slug: "updates",
+    label: "Updates",
+    description:
+      "News, releases, and deep dives from NukeHub and the community.",
+    icon: "rocket",
+    accent: "orange",
   },
   {
     slug: "tutorials",
@@ -39,13 +40,6 @@ export const CATEGORIES: CategoryMeta[] = [
     description: "Community spotlights, events, and contributor stories.",
     icon: "users",
     accent: "purple",
-  },
-  {
-    slug: "project-updates",
-    label: "Project Updates",
-    description: "Releases, changelogs, and deep dives into NukeHub projects.",
-    icon: "rocket",
-    accent: "orange",
   },
 ];
 

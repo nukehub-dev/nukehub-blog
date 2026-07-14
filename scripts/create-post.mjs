@@ -18,13 +18,7 @@ import path from "node:path";
 const POSTS_DIR = "src/content/posts";
 const AUTHORS_DIR = "src/content/authors";
 
-const CATEGORIES = [
-  "news",
-  "tutorials",
-  "nuclear-industry",
-  "community",
-  "project-updates",
-];
+const CATEGORIES = ["updates", "tutorials", "nuclear-industry", "community"];
 
 const isInteractive = input.isTTY;
 let pendingLines = [];
