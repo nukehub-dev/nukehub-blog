@@ -76,6 +76,11 @@ All files under `src/` except `src/content/` (own NAD). Also owns
     import like `Plotly`). Static by default; the control bar offers a rotate
     toggle, Iso/Front/Top/Side presets, and fullscreen.
 - `src/data/` — typed static data: `nav.ts`, `footer.ts`, `site.ts`.
+- `src/integrations/` — Astro integrations with build hooks.
+  `markdown-negotiation.ts` (`astro:build:done`) walks `dist/` and converts
+  each HTML page to a `.md` sibling via turndown, stripping UI chrome.
+  `public/_worker.js` (Pages advanced mode) serves those `.md` files when the
+  client prefers `text/markdown`, and adds `Vary: Accept` to HTML responses.
 
 ### Environment variables
 

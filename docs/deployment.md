@@ -13,6 +13,15 @@ Production settings:
 - Output directory: `dist`
 - Custom domain: `blog.nukehub.org`
 
+## Markdown content negotiation
+
+The build emits a `.md` sibling for every HTML page (via the
+`markdown-negotiation` Astro integration). `public/_worker.js` puts Pages in
+advanced mode, so a Worker runs before static assets on every request: when
+the client's `Accept` header prefers `text/markdown` (RFC 9110 q-values), it
+serves the `.md` version at the same URL; otherwise the request falls through
+to the static HTML. HTML responses carry `Vary: Accept`.
+
 ## Environment variables
 
 `PUBLIC_*` variables are bundled into the static site and visible to the

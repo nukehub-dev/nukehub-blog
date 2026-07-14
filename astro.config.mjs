@@ -4,6 +4,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { postAssetsPlugin } from "./src/lib/postAssetsPlugin.ts";
+import markdownNegotiation from "./src/integrations/markdown-negotiation";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,7 +14,7 @@ export default defineConfig({
     prefetchAll: false,
     defaultStrategy: "hover",
   },
-  integrations: [react(), mdx(), sitemap()],
+  integrations: [react(), mdx(), sitemap(), markdownNegotiation()],
   vite: {
     plugins: [tailwindcss(), postAssetsPlugin()],
     build: {

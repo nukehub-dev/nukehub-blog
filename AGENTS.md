@@ -143,9 +143,13 @@ High-level layout; see the Child NAD Index below for domain-specific details.
   `src/content/AGENTS.md`.
 - `src/lib/` — shared TypeScript utilities, theme engine, and post helpers.
 - `src/data/` — typed static data: nav, footer, site metadata.
+- `src/integrations/` — Astro integrations (build hooks):
+  `markdown-negotiation` converts every built HTML page into a `.md` sibling
+  (turndown), served by `public/_worker.js` via `Accept` content negotiation.
 - `src/styles/` — Tailwind v4 theme entrypoint.
 - `public/` — static assets: fonts, favicon, images, robots.txt, PWA
-  manifest, and the service worker template (`sw.js.tpl`).
+  manifest, the service worker template (`sw.js.tpl`), and the Pages
+  advanced-mode worker (`_worker.js`).
 - `scripts/` — repo tooling: post/author scaffolding and the prebuild
   service worker cache stamp (`inject-sw-cache.js`).
 - `docs/` — project documentation for contributors and content authors.
