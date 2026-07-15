@@ -89,20 +89,22 @@ Plans are how NukeLab turns one physical machine into a shared platform without 
 <DataTable
   columns={[
     { key: "plan", header: "Plan" },
-    { key: "cpu", header: "CPU", align: "right" },
-    { key: "memory", header: "Memory", align: "right" },
-    { key: "disk", header: "Disk", align: "right" },
-    { key: "cost", header: "Cost", align: "right" },
+    { key: "cpu", header: "CPU (cores)", align: "right" },
+    { key: "memory", header: "Memory (GB)", align: "right" },
+    { key: "disk", header: "Disk (GB)", align: "right" },
+    { key: "cost", header: "Cost (NUKE/hr)", align: "right" },
     { key: "best", header: "Best for" },
   ]}
   data={[
-    { plan: "Small", cpu: "2 cores", memory: "4 GB", disk: "20 GB", cost: "1 NUKE/hr", best: "Light analysis, notebooks, and quick experiments" },
-    { plan: "Medium", cpu: "4 cores", memory: "8 GB", disk: "50 GB", cost: "2 NUKE/hr", best: "Standard simulations and data processing workflows" },
-    { plan: "Large", cpu: "8 cores", memory: "16 GB", disk: "100 GB", cost: "4 NUKE/hr", best: "Heavy parallel CPU workloads and longer runs" },
-    { plan: "XLarge", cpu: "16 cores", memory: "32 GB", disk: "200 GB", cost: "8 NUKE/hr", best: "Maximum resources — admin approval required" },
+    { plan: "Small", cpu: 2, memory: 4, disk: 20, cost: 1, best: "Light analysis, notebooks, and quick experiments" },
+    { plan: "Medium", cpu: 4, memory: 8, disk: 50, cost: 2, best: "Standard simulations and data processing workflows" },
+    { plan: "Large", cpu: 8, memory: 16, disk: 100, cost: 4, best: "Heavy parallel CPU workloads and longer runs" },
+    { plan: "XLarge", cpu: 16, memory: 32, disk: 200, cost: 8, best: "Maximum resources" },
   ]}
-  caption="The four built-in resource plans. Plans also define max runtime, idle timeout, scheduling options, and per-user server limits."
+  caption="The four built-in resource plans (factory defaults). Plans also define max runtime, idle timeout, scheduling options, and per-user server limits."
 />
+
+One thing to know about these defaults: all four built-in plans ship **private** — visible only to administrators — and the admin decides which of them to make available to users, retuning any value first: specs, hourly cost, runtime limits, everything. Treat the table as the factory starting point, not a fixed menu.
 
 The limits are real, enforced by the kernel: cgroup v2 CPU throttling and core pinning, hard memory ceilings, and storage quotas on XFS, ZFS, or Btrfs. Inside the container, **lxcfs** makes `free` and `nproc` report the plan's limits instead of the host's, so tools that auto-size thread pools or memory caches behave correctly. On top of plans, per-user quotas (`max_cpu`, `max_memory`, `max_disk`, `max_servers`) cap what any single account can hold at once, and GPU fields are already in the data model ahead of the GPU scheduling work on the roadmap.
 
