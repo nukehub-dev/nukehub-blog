@@ -1,6 +1,6 @@
 {
-  "name": "NukeHub Blog",
-  "short_name": "NukeHub Blog",
+  "name": "NukeBlog",
+  "short_name": "NukeBlog",
   "description": "News, tutorials, and insights from the NukeHub community.",
   "start_url": "/",
   "display": "standalone",

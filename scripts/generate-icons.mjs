@@ -4,15 +4,15 @@
  *
  * Android launchers mask icons (circle, squircle, teardrop, ...), so the
  * artwork must sit inside the maskable "safe zone": a centered circle with a
- * diameter of 80% of the canvas. The artwork bounding box is scaled to 76%
- * of the canvas (~12% padding per side) so no mask shape can crop it.
+ * diameter of 80% of the canvas. The artwork bounding box is scaled to 70%
+ * of the canvas (~15% padding per side) so no mask shape can crop it.
  *
  * Run from the repo root:  node scripts/generate-icons.mjs
  */
 import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 
-const SAFE_SCALE = 0.76; // artwork bbox vs. canvas; maskable safe zone is 0.8
+const SAFE_SCALE = 0.7; // artwork bbox vs. canvas; maskable safe zone is 0.8
 const BG = "#0a0a0a"; // matches the opaque background of the shipped icons
 
 const ICONS = [
