@@ -19,7 +19,7 @@ export function YouTube({
 
   return (
     <figure className={cn("my-6", className)}>
-      <div className="relative aspect-video w-full overflow-hidden rounded-md border border-border/50 bg-muted shadow-sm">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm">
         <iframe
           src={src}
           title={title}

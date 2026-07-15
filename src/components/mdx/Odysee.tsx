@@ -27,7 +27,7 @@ export function Odysee({
     return (
       <div
         className={cn(
-          "rounded-md border border-border/50 bg-muted p-4 text-sm text-muted-foreground",
+          "rounded-xl border border-border/50 bg-muted p-4 text-sm text-muted-foreground",
           className,
         )}
       >

@@ -3,17 +3,22 @@ import { cn } from "@lib/utils";
 
 interface StepProps {
   children: React.ReactNode;
-  index?: number;
   className?: string;
 }
 
-export function Step({ children, index, className }: StepProps) {
+// Numbering uses a CSS counter instead of cloneElement: children passed from
+// MDX through Astro are not React elements, so injected props never arrive.
+export function Step({ children, className }: StepProps) {
   return (
-    <li className={cn("relative pl-10", className)}>
-      <span className="absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-        {index}
-      </span>
-      <div className="pt-0.5">{children}</div>
+    <li
+      className={cn(
+        "relative flex gap-4 pb-8 last:pb-0",
+        "before:flex before:h-8 before:w-8 before:shrink-0 before:items-center before:justify-center before:rounded-full before:border before:border-primary/30 before:bg-primary/10 before:text-sm before:font-semibold before:text-primary before:content-[counter(nuke-step)] before:[counter-increment:nuke-step]",
+        "after:absolute after:bottom-0 after:left-4 after:top-8 after:w-px after:bg-border/70 last:after:hidden",
+        className,
+      )}
+    >
+      <div className="min-w-0 flex-1 pt-0.5 leading-7">{children}</div>
     </li>
   );
 }
@@ -24,23 +29,9 @@ interface StepsProps {
 }
 
 export function Steps({ children, className }: StepsProps) {
-  const numberedChildren = React.Children.map(children, (child, i) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child as React.ReactElement<StepProps>, {
-        index: i + 1,
-      });
-    }
-    return child;
-  });
-
   return (
-    <ol
-      className={cn(
-        "not-prose my-6 space-y-6 border-l border-border pl-4",
-        className,
-      )}
-    >
-      {numberedChildren}
+    <ol className={cn("not-prose my-6 [counter-reset:nuke-step]", className)}>
+      {children}
     </ol>
   );
 }

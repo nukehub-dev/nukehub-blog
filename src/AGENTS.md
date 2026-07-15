@@ -66,10 +66,14 @@ All files under `src/` except `src/content/` (own NAD). Also owns
   `YouTube`, `Odysee`, `Video`, `ImageFigure`, `Callout`, `Citation`,
   `InlineMath`, `Math`, `DataTable`, `Plotly`, `Mermaid`, `Tabs`, `Steps`,
   `FileTree`, `Model3D`.
+  - Card and media containers use `rounded-xl` with `border-border/50`; keep
+    new containers on the same radius for visual consistency.
   - `DataTable` supports optional column sorting, global search, and pagination
     via `sortable`, `searchable`, and `pagination` props.
   - `Tabs` uses `<Tabs>` + `<Tab label="...">` for switchable content panels.
-  - `Steps` uses `<Steps>` + `<Step>` for numbered procedures.
+  - `Steps` uses `<Steps>` + `<Step>` for numbered procedures. Numbering is a
+    CSS counter on the `<ol>` (`nuke-step`), not `cloneElement` — children
+    arriving from MDX are not React elements, so injected props never arrive.
   - `FileTree` renders a nested directory tree from an `items` prop.
   - `Model3D` renders `.glb` files from the post folder in a three.js orbit
     viewer (`Model3D.astro` + `Model3DClient.tsx`, `client:visible`, dynamic

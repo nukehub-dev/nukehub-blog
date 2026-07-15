@@ -47,7 +47,7 @@ export function ImageFigure({
     <>
       <figure
         className={cn(
-          "not-prose my-6 overflow-hidden rounded-md border border-border/50 bg-muted shadow-sm",
+          "not-prose my-6 overflow-hidden rounded-xl border border-border/50 bg-muted shadow-sm",
           className,
         )}
       >
