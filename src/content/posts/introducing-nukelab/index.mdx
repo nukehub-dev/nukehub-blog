@@ -33,6 +33,22 @@ references:
     title: NukeHub public roadmap
     url: https://nukehub.org/roadmap
     source: NukeHub
+  - id: openmc-docs
+    title: OpenMC Documentation
+    url: https://docs.openmc.org/
+    source: OpenMC Development Team
+  - id: theia
+    title: Eclipse Theia — The Cloud and Desktop IDE Platform
+    url: https://theia-ide.org/
+    source: Eclipse Foundation
+  - id: traefik
+    title: Traefik Proxy Documentation
+    url: https://doc.traefik.io/traefik/
+    source: Traefik Labs
+  - id: nukehub-support
+    title: Support Us — NukeHub
+    url: https://nukehub.org/support
+    source: NukeHub
 ---
 
 Every nuclear engineer knows the tax: before you can run a single particle transport simulation, you spend days — sometimes weeks — compiling toolchains. OpenMC, DAGMC, MOAB, Geant4, NJOY, each with its own build flags and dependency maze. Then a colleague asks you to reproduce your environment, and the meter starts over.
@@ -43,7 +59,7 @@ NukeLab is a multi-user scientific computing platform with granular role-based a
 
 **NukeLab v2.0 shipped on May 1, 2026**<Citation id="nukehub-changelog" />. It is a ground-up rewrite that replaces the JupyterHub-based v1 with a custom orchestration layer: a FastAPI backend, a React 19 dashboard, PostgreSQL 17, Redis 7, Celery workers, and Traefik v3 routing. The numbers behind it today: 52+ API endpoints, 6 predefined RBAC roles, 4 resource plans, and a backend test suite that has grown from 500+ tests at launch to over 2,600.
 
-This post is the full tour: how workspaces work, how the credit economy keeps shared hardware fair, how the security model is layered, and what is coming next.
+This post is the full tour: how workspaces work, how the credit economy keeps shared hardware fair, how the security model is layered, what the observability stack sees, which platforms are supported, and what is coming next.
 
 ## The three building blocks: Environments, Plans, Servers
 
@@ -83,7 +99,7 @@ Plans are how NukeLab turns one physical machine into a shared platform without 
     { plan: "Small", cpu: "2 cores", memory: "4 GB", disk: "20 GB", cost: "1 NUKE/hr", best: "Light analysis, notebooks, and quick experiments" },
     { plan: "Medium", cpu: "4 cores", memory: "8 GB", disk: "50 GB", cost: "2 NUKE/hr", best: "Standard simulations and data processing workflows" },
     { plan: "Large", cpu: "8 cores", memory: "16 GB", disk: "100 GB", cost: "4 NUKE/hr", best: "Heavy parallel CPU workloads and longer runs" },
-    { plan: "XLarge", cpu: "16 cores", memory: "32 GB", disk: "200 GB", cost: "8 NUKE/hr", best: "Maximum resources" },
+    { plan: "XLarge", cpu: "16 cores", memory: "32 GB", disk: "200 GB", cost: "8 NUKE/hr", best: "Maximum resources — admin approval required" },
   ]}
   caption="The four built-in resource plans. Plans also define max runtime, idle timeout, scheduling options, and per-user server limits."
 />
@@ -100,9 +116,9 @@ The result is a platform where a classroom of thirty students can share one work
 
 ## Inside the workspace: NukeIDE
 
-The container you land in is not a bare shell. The flagship `workspace` environment runs **NukeIDE** — our open-source IDE built on Eclipse Theia 1.72.3, designed specifically for nuclear simulation and engineering<Citation id="nuke-ide-repo" />. It ships three purpose-built extensions on top of the full Monaco-based editing experience:
+The container you land in is not a bare shell. The flagship `workspace` environment runs **NukeIDE** — our open-source IDE built on Eclipse Theia 1.72.3<Citation id="theia" />, designed specifically for nuclear simulation and engineering<Citation id="nuke-ide-repo" />. It ships three purpose-built extensions on top of the full Monaco-based editing experience:
 
-- **OpenMC Studio** (flagship): a no-code graphical builder for OpenMC Monte Carlo simulations — materials, CSG geometry, a DAGMC editor with faceting and volume grouping, tallies with mesh editors and filter builders, depletion, variance reduction, photon transport, parameter-sweep optimization, CAD import (STEP/IGES to DAGMC or CSG), and Python script export. Live simulation dashboards plot k-eff as the run progresses.
+- **OpenMC Studio** (flagship): a no-code graphical builder for OpenMC Monte Carlo simulations<Citation id="openmc-docs" /> — materials, CSG geometry, a DAGMC editor with faceting and volume grouping, tallies with mesh editors and filter builders, depletion, variance reduction, photon transport, parameter-sweep optimization, CAD import (STEP/IGES to DAGMC or CSG), and Python script export. Live simulation dashboards plot k-eff as the run progresses.
 - **Nuke Visualizer**: 3-D/2-D visualization for nuclear data — VTK, DAGMC `.h5m`, STL, PLY, and OBJ meshes; OpenMC statepoint viewing with k-eff convergence plots; tally overlays on geometry; energy spectra; and source-distribution scatter plots.
 - **Nuke Core**: the foundation — automatic detection and management of conda, mamba, venv, poetry, pyenv, and uv environments, package installs with live terminal output, health checks, and a context-aware status bar.
 
@@ -139,6 +155,7 @@ flowchart LR
     API --> CW[Celery worker + beat]
     API -->|Docker/Podman API| IDE
     IDE --> SC[nginx + Go auth-sidecar]
+    API -->|/api/metrics| MON[Observability overlays: Prometheus, Grafana, Alertmanager, Jaeger]
 `}
 />
 
@@ -162,7 +179,7 @@ flowchart LR
 
 Traefik's routing table is the whole traffic story in three rules: `/` serves the static SPA, `/api` and `/ws` go to FastAPI, and `/user/<username>/<server>` is dynamically routed to the right user container via Docker labels — no config reloads as servers come and go.
 
-The design decisions behind this stack are documented in the repo, and they are opinionated: a Vite SPA instead of Next.js because there is no Node.js runtime overhead in production; FastAPI instead of Django because async WebSockets matter for streaming Docker stats; Traefik instead of Nginx because container auto-discovery eliminates an entire class of proxy config; PostgreSQL with monthly partitioning instead of a separate time-series database.
+The design decisions behind this stack are documented in the repo, and they are opinionated: a Vite SPA instead of Next.js because there is no Node.js runtime overhead in production; FastAPI instead of Django because async WebSockets matter for streaming Docker stats; Traefik instead of Nginx because container auto-discovery eliminates an entire class of proxy config<Citation id="traefik" />; PostgreSQL with monthly partitioning instead of a separate time-series database.
 
 ## RBAC: six roles, one permission matrix
 
@@ -209,6 +226,8 @@ Out of the box, the dashboard streams live CPU, memory, disk, and network metric
 
 Flip on the monitoring overlay and NukeLab grows a full Prometheus stack: Prometheus scraping custom `nukelab_*` metrics (HTTP request rates and durations, active WebSocket connections, cache hit ratios, user and server counts, total NUKE balance), two provisioned Grafana dashboards (API performance and infrastructure), Alertmanager with pre-built rules for high error rate, high p99 latency, target down, and Postgres/Redis saturation, and optional OpenTelemetry tracing into Jaeger. None of it gets host ports — Grafana lives at `/grafana` and Prometheus at `/prometheus`, behind Traefik ForwardAuth, so the observability stack inherits the platform's own authentication.
 
+Two quieter pieces complete the picture. Error tracking runs through the Sentry SDK on both frontend and backend — a no-op until you set a DSN, with self-hosted GlitchTip as the recommended target. And every log line is structured JSON carrying a correlation ID, which doubles as the trace ID when OpenTelemetry tracing is enabled, so you can follow a single spawn request from the HTTP edge through the API, the database, and the Docker daemon.
+
 ## Self-host in five minutes
 
 Prerequisites: Docker or Podman with compose, Git, and about 10 GB of free disk.
@@ -242,6 +261,16 @@ That is the whole thing. The dashboard comes up at `http://localhost:8080`, the 
 
 Quality engineering is treated as a feature, not an afterthought: over 2,600 backend tests covering security, lifecycle, and performance paths; hybrid Locust + k6 load testing with smoke, baseline, stress, spike, and endurance profiles; CI that lints, tests, builds, and pushes signed images with Trivy vulnerability scans, Cosign signatures, and SBOMs attached.
 
+## Platform support: Docker and Podman today, k3s tomorrow
+
+Since deployment targets keep coming up, here is the support matrix, stated plainly:
+
+- **Supported today**: a single Linux host running **Docker or Podman** with Compose — the container engine is auto-detected, and the same `compose.yml` drives both. For production-grade isolation the host needs cgroup v2 controllers (`cpu cpuset io memory pids`), lxcfs, and a quota-capable filesystem — XFS, ZFS, or Btrfs; ext4 and overlayfs cannot enforce the per-container storage quotas. TLS is handled by Traefik with automatic Let's Encrypt certificates.
+- **Hosted alternative**: if you would rather not run anything at all, [lab.nukehub.org](https://lab.nukehub.org) is the same platform operated by NukeHub.
+- **Planned for Q4 2026**: **k3s / Kubernetes deployment** — Helm charts, horizontal pod autoscaling, PVCs, Network Policies, and Pod Security Standards. The project's own rule is to reach for Kubernetes only once a single node is saturated (think a 32-core / 128 GB server), and the monitoring docs already sketch the migration path onto kube-prometheus-stack with ServiceMonitor and PrometheusRule CRDs. Cross-host server migration stays parked until that multi-node work lands.
+
+And when you need a human: [talk.nukehub.org](https://talk.nukehub.org) for questions and discussion, or the GitHub issue trackers on [nukelab](https://github.com/nukehub-dev/nukelab) and [nuke-ide](https://github.com/nukehub-dev/nuke-ide) for bugs and feature requests.
+
 ## What is next
 
 The [public roadmap](https://nukehub.org/roadmap)<Citation id="nukehub-roadmap" /> tracks where the platform goes from here. In progress for Q3 2026:
@@ -263,5 +292,7 @@ NukeLab is open source and ready to run today:
 - **Hosted instance**: [lab.nukehub.org](https://lab.nukehub.org) — sign in and deploy a server in minutes.
 - **Source**: [github.com/nukehub-dev/nukelab](https://github.com/nukehub-dev/nukelab) and [github.com/nukehub-dev/nuke-ide](https://github.com/nukehub-dev/nuke-ide) — stars, issues, and pull requests welcome.
 - **Community**: [talk.nukehub.org](https://talk.nukehub.org) — come tell us what you are simulating.
+
+NukeHub runs on the generosity of sponsors, donors, and volunteers. If NukeLab saves your team weeks of setup, consider giving back through the Support Us page<Citation id="nukehub-support" />: yearly sponsorship tiers from Bronze ($250/year) to Platinum ($2,500/year) plus custom packages, one-time donations, resource donations of server capacity or infrastructure, and volunteering — from contributing code and writing tutorials to leading workshops. Contributions fund server capacity, feature development, and educational programs, and sponsors are recognized on the [acknowledgment page](https://nukehub.org/acknowledgment).
 
 Whether you are a professor who needs thirty identical OpenMC environments for a reactor-physics course, a lab that wants its simulation toolchain off individual laptops, or a student who just wants to run a pin-cell benchmark without compiling MOAB first — NukeLab was built for you. Deploy a server and see.
