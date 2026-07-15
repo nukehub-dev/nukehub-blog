@@ -73,9 +73,14 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — capped to the remaining viewport height (header bar is
+          h-14 = 3.5rem) with its own scroll; overscroll-contain stops touch
+          scroll from chaining through to the page behind. */}
       {mobileOpen && (
-        <div id="mobile-nav" className="border-t border-border lg:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t border-border lg:hidden max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain"
+        >
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-4">
             {navItems.map((item) => (
               <a

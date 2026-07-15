@@ -148,8 +148,10 @@ High-level layout; see the Child NAD Index below for domain-specific details.
   (turndown), served by `public/_worker.js` via `Accept` content negotiation.
 - `src/styles/` — Tailwind v4 theme entrypoint.
 - `public/` — static assets: fonts, favicon, images, robots.txt, PWA
-  manifest, the service worker template (`sw.js.tpl`), and the Pages
-  advanced-mode worker (`_worker.js`).
+  manifest, the service worker template (`sw.js.tpl`), the Pages
+  advanced-mode worker (`_worker.js`), and `_headers`. `_headers` sets
+  `Access-Control-Allow-Origin: *` on `/rss.xml` — nukehub.org's homepage
+  fetches the feed client-side, so keep this rule in place.
 - `scripts/` — repo tooling: post/author scaffolding, the prebuild service
   worker cache stamp (`inject-sw-cache.js`), PWA icon generation
   (`generate-icons.mjs`), and manual in-place image optimization

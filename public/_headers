@@ -1,0 +1,5 @@
+# CORS for the RSS feed — nukehub.org's homepage BlogSection fetches
+# /rss.xml client-side (see src/lib/blog.ts in the nukehub.org repo). The
+# feed is public content, so allow any origin (also covers local dev).
+/rss.xml
+  Access-Control-Allow-Origin: *
