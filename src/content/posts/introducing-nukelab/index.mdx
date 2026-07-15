@@ -1,0 +1,267 @@
+---
+title: "Introducing NukeLab: Multi-User Scientific Computing for Nuclear Engineering"
+description: "NukeLab v2.0 turns a single Docker or Podman host into a multi-user scientific computing platform: containerized NukeIDE workspaces, six-role RBAC, a NUKE credit economy, and real-time monitoring. Here is a deep dive into how it works."
+publishedDate: 2026-07-15
+category: updates
+author: ahnaf-tahmid-chowdhury
+tags: [nukelab, nuke-ide, openmc, docker, platform]
+featured: true
+draft: false
+coverImage: dashboard.png
+references:
+  - id: nukelab-repo
+    title: NukeLab source code
+    url: https://github.com/nukehub-dev/nukelab
+    source: NukeHub Developers on GitHub
+  - id: nukelab-page
+    title: NukeLab product page
+    url: https://nukehub.org/nuke-lab
+    source: NukeHub
+  - id: nuke-ide-repo
+    title: NukeIDE source code
+    url: https://github.com/nukehub-dev/nuke-ide
+    source: NukeHub Developers on GitHub
+  - id: nuke-ide-page
+    title: NukeIDE product page
+    url: https://nukehub.org/nuke-ide
+    source: NukeHub
+  - id: nukehub-changelog
+    title: NukeHub changelog
+    url: https://nukehub.org/changelog
+    source: NukeHub
+  - id: nukehub-roadmap
+    title: NukeHub public roadmap
+    url: https://nukehub.org/roadmap
+    source: NukeHub
+---
+
+Every nuclear engineer knows the tax: before you can run a single particle transport simulation, you spend days — sometimes weeks — compiling toolchains. OpenMC, DAGMC, MOAB, Geant4, NJOY, each with its own build flags and dependency maze. Then a colleague asks you to reproduce your environment, and the meter starts over.
+
+NukeHub exists to delete that tax. Our mission has always been to let the global nuclear community "focus on designing the clean energy systems of tomorrow by transforming months of software configuration into seconds of cloud deployment." **NukeLab** is where that mission becomes a product you can log into.
+
+NukeLab is a multi-user scientific computing platform with granular role-based access control, real-time monitoring, credit-based resource management, and dynamic container orchestration<Citation id="nukelab-repo" />. It gives every user an on-demand, browser-accessible nuclear-engineering workspace — a full IDE with the simulation stack preinstalled — while giving administrators the governance tools to run it all safely on shared hardware. You can self-host it on a single Docker or Podman machine, or sign in to our hosted instance at [lab.nukehub.org](https://lab.nukehub.org).
+
+**NukeLab v2.0 shipped on May 1, 2026**<Citation id="nukehub-changelog" />. It is a ground-up rewrite that replaces the JupyterHub-based v1 with a custom orchestration layer: a FastAPI backend, a React 19 dashboard, PostgreSQL 17, Redis 7, Celery workers, and Traefik v3 routing. The numbers behind it today: 52+ API endpoints, 6 predefined RBAC roles, 4 resource plans, and a backend test suite that has grown from 500+ tests at launch to over 2,600.
+
+This post is the full tour: how workspaces work, how the credit economy keeps shared hardware fair, how the security model is layered, and what is coming next.
+
+## The three building blocks: Environments, Plans, Servers
+
+Everything in NukeLab is built from three concepts:
+
+- **Environments** are admin-defined templates describing a Docker image (or a custom Dockerfile), the installed tools and packages, exposed ports, environment variables, volumes, and resource defaults. An environment is the _what_ — for example, "NukeIDE with OpenMC and Geant4."
+- **Plans** are resource tiers: how much CPU, memory, and disk a server gets, plus max runtime, idle timeout, and the hourly cost in NUKE credits. A plan is the _how big_. Decoupling plans from environments means you can run the same toolchain at four different sizes without duplicating anything.
+- **Servers** are the per-user workspaces themselves: isolated containers spawned on demand from an environment + plan pair, each with persistent storage and its own routed URL.
+
+The user-facing workflow is deliberately boring:
+
+<Steps>
+  <Step>Sign in with local credentials or your organization's OAuth2/OIDC provider.</Step>
+  <Step>Pick an environment and a plan, then deploy — NukeLab validates your permissions, quotas, and credit balance before anything starts.</Step>
+  <Step>Open NukeIDE in your browser and run your simulations.</Step>
+  <Step>Invite collaborators into shared workspaces, watch live metrics, and let scheduled start/stop handle the routine.</Step>
+</Steps>
+
+Under the hood, a spawn request flows through authentication, permission, quota, and credit checks, then into the `ResourcePoolService`, which verifies the host actually has the CPU, memory, and disk to honor the plan. If it does not, the request is **queued** rather than failed — fair scheduling for scarce hardware. Otherwise the spawner ensures the persistent volume, pulls the image, creates the container with the plan's cgroup limits, attaches Traefik labels so it is reachable at `/user/<username>/<server>`, waits for an HTTP readiness probe, and flips the server to `running` while broadcasting a status event over WebSocket to every open dashboard.
+
+Servers move through a well-defined lifecycle — `pending`, `starting`, `running`, `stopping`, `stopped`, `error` — with a background `HealthCheckService` that probes running containers and can automatically restart unhealthy ones. Idle servers are stopped after their plan's `idle_timeout`, hard-stopped at `max_runtime`, and cron-based schedules (fired by Celery Beat) can start and stop servers on a timetable — say, powering up a lab environment every weekday at 08:00 and shutting it down at 18:00 to stop burning credits. A `Quick Spawn` shortcut (`Alt+N`) with saved defaults makes the common case one keystroke.
+
+## Fair-share resource plans
+
+Plans are how NukeLab turns one physical machine into a shared platform without the noisy-neighbor problem. The four built-in tiers:
+
+<DataTable
+  columns={[
+    { key: "plan", header: "Plan" },
+    { key: "cpu", header: "CPU", align: "right" },
+    { key: "memory", header: "Memory", align: "right" },
+    { key: "disk", header: "Disk", align: "right" },
+    { key: "cost", header: "Cost", align: "right" },
+    { key: "best", header: "Best for" },
+  ]}
+  data={[
+    { plan: "Small", cpu: "2 cores", memory: "4 GB", disk: "20 GB", cost: "1 NUKE/hr", best: "Light analysis, notebooks, and quick experiments" },
+    { plan: "Medium", cpu: "4 cores", memory: "8 GB", disk: "50 GB", cost: "2 NUKE/hr", best: "Standard simulations and data processing workflows" },
+    { plan: "Large", cpu: "8 cores", memory: "16 GB", disk: "100 GB", cost: "4 NUKE/hr", best: "Heavy parallel CPU workloads and longer runs" },
+    { plan: "XLarge", cpu: "16 cores", memory: "32 GB", disk: "200 GB", cost: "8 NUKE/hr", best: "Maximum resources" },
+  ]}
+  caption="The four built-in resource plans. Plans also define max runtime, idle timeout, scheduling options, and per-user server limits."
+/>
+
+The limits are real, enforced by the kernel: cgroup v2 CPU throttling and core pinning, hard memory ceilings, and storage quotas on XFS, ZFS, or Btrfs. Inside the container, **lxcfs** makes `free` and `nproc` report the plan's limits instead of the host's, so tools that auto-size thread pools or memory caches behave correctly. On top of plans, per-user quotas (`max_cpu`, `max_memory`, `max_disk`, `max_servers`) cap what any single account can hold at once, and GPU fields are already in the data model ahead of the GPU scheduling work on the roadmap.
+
+## NUKE: a credit economy for shared hardware
+
+Shared academic hardware always ends up with the same politics: someone leaves a 16-core job idling for a week, and everyone else queues. NukeLab's answer is a small internal currency.
+
+Every user has a **NUKE balance** and a **daily allowance** that refills each day — with no rollover, deliberately, so credits cannot be hoarded. While a server runs, Celery workers debit the balance at the plan's hourly rate. Run out of credits and spawning or starting a server is refused until the next allowance lands or an admin issues a grant. Every movement goes through an append-only, immutable `CreditTransaction` ledger typed as `daily_allowance`, `server_usage`, `admin_grant`, `purchase`, or `refund`, so balances are always auditable down to the last credit.
+
+The result is a platform where a classroom of thirty students can share one workstation fairly: everyone gets daily compute, heavy users think about what they run, and administrators get a lever (`admin_grant`) for exceptions without touching quotas.
+
+## Inside the workspace: NukeIDE
+
+The container you land in is not a bare shell. The flagship `workspace` environment runs **NukeIDE** — our open-source IDE built on Eclipse Theia 1.72.3, designed specifically for nuclear simulation and engineering<Citation id="nuke-ide-repo" />. It ships three purpose-built extensions on top of the full Monaco-based editing experience:
+
+- **OpenMC Studio** (flagship): a no-code graphical builder for OpenMC Monte Carlo simulations — materials, CSG geometry, a DAGMC editor with faceting and volume grouping, tallies with mesh editors and filter builders, depletion, variance reduction, photon transport, parameter-sweep optimization, CAD import (STEP/IGES to DAGMC or CSG), and Python script export. Live simulation dashboards plot k-eff as the run progresses.
+- **Nuke Visualizer**: 3-D/2-D visualization for nuclear data — VTK, DAGMC `.h5m`, STL, PLY, and OBJ meshes; OpenMC statepoint viewing with k-eff convergence plots; tally overlays on geometry; energy spectra; and source-distribution scatter plots.
+- **Nuke Core**: the foundation — automatic detection and management of conda, mamba, venv, poetry, pyenv, and uv environments, package installs with live terminal output, health checks, and a context-aware status bar.
+
+NukeIDE also ships with Theia's AI assistant built in (chat, code completion, and terminal assistance, with providers from OpenAI and Anthropic to local Ollama and Llamafile), plus VS Code extension compatibility through Open VSX — the Microsoft Python and Jupyter extensions come preconfigured. When it runs inside NukeLab, a dedicated `nukelab-integration` extension wires the IDE to the platform: it knows your username and server, adds "Back to Dashboard" and "Log Out" commands, and lets you install the workspace as a PWA. If you prefer a native window, the same IDE exists as an Electron desktop app for Windows, macOS, and Linux<Citation id="nuke-ide-page" />.
+
+<ImageFigure
+  src="nukeide-openmc-studio.png"
+  alt="NukeIDE running OpenMC Studio: the DAGMC editor on a tokamak model, the 3-D visualizer, and an optimization study panel"
+  caption="NukeIDE inside a NukeLab workspace: OpenMC Studio's DAGMC editor and 3-D visualizer on a tokamak geometry, alongside a parameter-sweep optimization study."
+/>
+
+The environment images themselves are layered, each built on the previous:
+
+1. **`base`** — a digest-pinned Debian 13 image with nginx and the auth sidecar, running as the unprivileged `nukelab` user.
+2. **`dev`** — adds a ttyd web terminal, for lightweight shell-only workspaces.
+3. **`workspace`** — adds Miniforge (conda), Node.js, and the NukeIDE browser build.
+4. **`radiation-transport`** — the full nuclear stack, compiled from source: **OpenMC v0.15.3, DAGMC v3.2.4, MOAB 5.5.1, Geant4 v11.4.2, double-down v1.1.0, libMesh v1.8.4, NJOY2016 2016.79, KDSource v0.2.2, PyNE, and ALARA**, plus ParaView, pythonocc-core, paramak, PlasmaPy, NCrystal, montepy, geant4-pybind, vmecpp, pydagmc, and mcpl on the Python side.
+
+That last layer is the "months of configuration" the mission statement talks about, collapsed into `docker pull`. Admins can also define entirely custom environments — the template system accepts any image or Dockerfile — and build the provided ones with `./nukelabctl build env <name>`.
+
+## Architecture: boring on purpose
+
+NukeLab is engineered for constrained, self-hosted bare metal — a university server under a desk, not a cloud region. Every piece is a well-understood, boring-in-a-good-way component:
+
+<Mermaid
+  chart={`
+flowchart LR
+    Browser[User browser] --> Proxy[Traefik v3 proxy]
+    Proxy -->|/| SPA[React 19 dashboard]
+    Proxy -->|/api and /ws| API[FastAPI backend]
+    Proxy -->|/user/name/server| IDE[NukeIDE containers]
+    API --> PG[(PostgreSQL 17)]
+    API --> RD[(Redis 7)]
+    API --> CW[Celery worker + beat]
+    API -->|Docker/Podman API| IDE
+    IDE --> SC[nginx + Go auth-sidecar]
+`}
+/>
+
+<DataTable
+  columns={[
+    { key: "service", header: "Service" },
+    { key: "stack", header: "Stack" },
+    { key: "role", header: "Role" },
+  ]}
+  data={[
+    { service: "traefik", stack: "Traefik v3.1", role: "TLS termination, rate limiting, dynamic container routing, WebSocket proxying" },
+    { service: "frontend", stack: "Vite + React 19 SPA", role: "Static dashboard — TanStack Router/Query, shadcn/ui, Tailwind v4, Recharts; no Node runtime in production" },
+    { service: "backend", stack: "FastAPI on Python 3.13", role: "Async REST + WebSocket API — Pydantic v2, SQLAlchemy 2, Alembic, async Docker SDK orchestration" },
+    { service: "postgres", stack: "PostgreSQL 17", role: "System of record; time-series tables range-partitioned by month" },
+    { service: "redis", stack: "Redis 7", role: "Sessions, token denylist, Celery broker, pub/sub, response cache, rate-limit counters" },
+    { service: "celery-worker", stack: "Celery 5.4", role: "Credit debits, cleanup, notifications, report generation" },
+    { service: "celery-beat", stack: "Celery Beat", role: "Cron schedules, periodic metrics and maintenance" },
+  ]}
+  caption="Core services in compose.yml. Optional overlays add Prometheus, Grafana, Alertmanager, PgBouncer, Jaeger tracing, and load-testing tools."
+/>
+
+Traefik's routing table is the whole traffic story in three rules: `/` serves the static SPA, `/api` and `/ws` go to FastAPI, and `/user/<username>/<server>` is dynamically routed to the right user container via Docker labels — no config reloads as servers come and go.
+
+The design decisions behind this stack are documented in the repo, and they are opinionated: a Vite SPA instead of Next.js because there is no Node.js runtime overhead in production; FastAPI instead of Django because async WebSockets matter for streaming Docker stats; Traefik instead of Nginx because container auto-discovery eliminates an entire class of proxy config; PostgreSQL with monthly partitioning instead of a separate time-series database.
+
+## RBAC: six roles, one permission matrix
+
+Multi-user means governance, and NukeLab's model is granular: six predefined roles, over twenty permissions editable through a visual permission-matrix editor, per-user permission overrides for exceptions, and 24 granular scopes for API tokens.
+
+<DataTable
+  columns={[
+    { key: "role", header: "Role" },
+    { key: "access", header: "What it can do" },
+  ]}
+  data={[
+    { role: "super_admin", access: "Full system control: roles, configuration, impersonation" },
+    { role: "admin", access: "Full user and server management; can access any user server (audited)" },
+    { role: "moderator", access: "User CRUD and platform-wide visibility, but cannot open user servers" },
+    { role: "support", access: "Read-only platform access; may enter user servers for debugging (audited)" },
+    { role: "user", access: "Own servers and resources, within quotas" },
+    { role: "guest", access: "Temporary accounts with severe limits and automatic expiry" },
+  ]}
+  caption="The six predefined roles. Rate limits scale with trust: from 30 requests/minute for guests up to unlimited for super admins."
+/>
+
+Administration happens from a single panel: bulk start/stop/restart/delete across servers, workspace and volume management, IP allowlists and blocklists with CIDR support (and self-block prevention, so you cannot lock yourself out), scheduled maintenance windows with automatic enable/disable, a notification center with over twenty event types delivered in-app, by email, and over WebSocket, and full audit logging with CSV/JSON export. Impersonation exists for support workflows but is restricted to `super_admin` and written to the audit log like everything else.
+
+<ImageFigure
+  src="admin.png"
+  alt="The NukeLab administration panel with cards for users, servers, quotas, permissions, audit logs, credits, and monitoring links"
+  caption="The Administration panel: users, plans, quotas, permissions, audit logs, IP restrictions, maintenance windows, and direct links into Grafana, Prometheus, Alertmanager, and Jaeger."
+/>
+
+## Security in layers
+
+A platform that proxies you into a container as another user on a shared host has to get isolation right. The layered model:
+
+- **Identity**: local username/password (bcrypt) or OAuth 2.0/OIDC with PKCE — Keycloak, Auth0, Okta, Authentik — or both at once. Access tokens are short-lived JWTs signed with **EdDSA (Ed25519)**, published via JWKS, with zero-downtime key rotation (`./nukelabctl rotate-user-auth-key`) and a Redis-backed denylist for revocation.
+- **Container access**: opening a workspace issues a separate, server-scoped **RS256 token valid for five minutes**, validated _inside_ the container by a small Go auth-sidecar that holds only the public key — no per-request calls back to the platform, and no user credentials ever enter the workspace container.
+- **Web hardening**: CSRF double-submit protection, security headers, path-traversal defenses, two-layer rate limiting (per-IP at Traefik, per-user in the API), and audit logging of administrative actions.
+- **Container hardening**: workspaces run as a non-root UID with all capabilities dropped, a read-only root filesystem, and `no-new-privileges` — verifiable at any time with `./nukelabctl verify-hardening`.
+
+An internal OWASP Top 10 audit has passed, and a full third-party penetration test is scheduled before the public launch — one of the few remaining gates on the roadmap.
+
+## Observability: see everything, opt in to more
+
+Out of the box, the dashboard streams live CPU, memory, disk, and network metrics over WebSocket — global, per-user, and per-server — with usage-trend charts over 7, 30, and 90 days and configurable alert rules. That is the always-on tier.
+
+Flip on the monitoring overlay and NukeLab grows a full Prometheus stack: Prometheus scraping custom `nukelab_*` metrics (HTTP request rates and durations, active WebSocket connections, cache hit ratios, user and server counts, total NUKE balance), two provisioned Grafana dashboards (API performance and infrastructure), Alertmanager with pre-built rules for high error rate, high p99 latency, target down, and Postgres/Redis saturation, and optional OpenTelemetry tracing into Jaeger. None of it gets host ports — Grafana lives at `/grafana` and Prometheus at `/prometheus`, behind Traefik ForwardAuth, so the observability stack inherits the platform's own authentication.
+
+## Self-host in five minutes
+
+Prerequisites: Docker or Podman with compose, Git, and about 10 GB of free disk.
+
+```bash
+git clone https://github.com/nukehub-dev/nukelab.git
+cd nukelab
+cp .env.example .env.development
+./nukelabctl start
+```
+
+That is the whole thing. The dashboard comes up at `http://localhost:8080`, the API docs at `http://localhost:8080/api/docs`, and a development admin account (`admin` / `admin123`) is created automatically in dev mode. `nukelabctl` is the single entry point for operating the platform:
+
+```bash
+./nukelabctl dev          # hot-reload dev stack (Vite dev server on :5173)
+./nukelabctl test         # backend pytest suite, in containers
+./nukelabctl e2e          # Playwright end-to-end tests
+./nukelabctl loadtest     # Locust + k6 load profiles
+./nukelabctl lint all     # ruff, eslint/prettier, shellcheck, markdown
+./nukelabctl security     # Bandit, pip-audit, npm audit, SBOM
+./nukelabctl backup       # database backup (restore <file> to revert)
+./nukelabctl doctor       # host-readiness diagnostics
+```
+
+<Callout type="warning">
+  The default credentials and secrets are for development only. NukeLab refuses
+  to boot in production with default secrets — and the production checklist adds
+  cgroup controllers, lxcfs, a quota-capable filesystem (XFS, ZFS, or Btrfs),
+  and TLS via Traefik's Let's Encrypt integration.
+</Callout>
+
+Quality engineering is treated as a feature, not an afterthought: over 2,600 backend tests covering security, lifecycle, and performance paths; hybrid Locust + k6 load testing with smoke, baseline, stress, spike, and endurance profiles; CI that lints, tests, builds, and pushes signed images with Trivy vulnerability scans, Cosign signatures, and SBOMs attached.
+
+## What is next
+
+The [public roadmap](https://nukehub.org/roadmap)<Citation id="nukehub-roadmap" /> tracks where the platform goes from here. In progress for Q3 2026:
+
+- **Environment image pipeline** — CI-driven builds with registry tagging, immutable image versions, and automated base-image refreshes (today images are built manually).
+- **Playwright E2E suite** — browser tests for login, server spawn/stop, workspace sharing, and admin bulk actions.
+
+Planned for Q4 2026:
+
+- **k3s / Kubernetes deployment** — Helm charts, horizontal pod autoscaling, PVCs, Network Policies, and Pod Security Standards, for when a single node is no longer enough.
+- **GPU allocation & metrics** — GPU scheduling in plans and quotas, device passthrough, and GPU metrics in the dashboard (deferred until the CPU orchestration path is complete; the data model is already GPU-aware).
+
+On the NukeIDE side that powers the workspaces: OpenMC Studio Phase 5 (a Random Ray/MOC deterministic solver, multi-group cross-section generation, kinetics parameters, and advanced source types), the optimization framework's full parameter-sweep pipeline, a Cardinal multiphysics extension coupling OpenMC with MOOSE in Q4 2026, and Geant4 integration in Q1 2027. MCNP support is parked — gated by licensing and distribution constraints, not by interest.
+
+## Try it
+
+NukeLab is open source and ready to run today:
+
+- **Hosted instance**: [lab.nukehub.org](https://lab.nukehub.org) — sign in and deploy a server in minutes.
+- **Source**: [github.com/nukehub-dev/nukelab](https://github.com/nukehub-dev/nukelab) and [github.com/nukehub-dev/nuke-ide](https://github.com/nukehub-dev/nuke-ide) — stars, issues, and pull requests welcome.
+- **Community**: [talk.nukehub.org](https://talk.nukehub.org) — come tell us what you are simulating.
+
+Whether you are a professor who needs thirty identical OpenMC environments for a reactor-physics course, a lab that wants its simulation toolchain off individual laptops, or a student who just wants to run a pin-cell benchmark without compiling MOAB first — NukeLab was built for you. Deploy a server and see.
