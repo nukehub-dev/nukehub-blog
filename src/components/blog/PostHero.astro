@@ -46,18 +46,15 @@ if (coverImageSrc) {
 ---
 
 <section
-  class="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm"
+  class="relative overflow-hidden rounded-xl border border-border/50 bg-card shadow-sm"
 >
   <div class="grid lg:grid-cols-2">
     {
       coverImageSrc && (
         <div
           class={cn(
-            "relative self-center aspect-video overflow-hidden lg:aspect-auto",
-            isContain
-              ? "flex items-center justify-center p-2 sm:p-4"
-              : "bg-muted",
-            !coverImageTransparent && isContain && "bg-muted",
+            "relative aspect-video overflow-hidden lg:aspect-auto",
+            isContain && "flex items-center justify-center bg-muted p-2 sm:p-4",
           )}
           style={
             isContain && coverAspectRatio
@@ -69,7 +66,7 @@ if (coverImageSrc) {
             src={coverImageSrc}
             alt={title}
             aspect="auto"
-            rounded="md"
+            rounded={isContain ? "lg" : "none"}
             fit={fit}
             transparent={coverImageTransparent}
             loading="eager"
