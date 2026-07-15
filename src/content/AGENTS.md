@@ -124,6 +124,9 @@ Use the `draft` frontmatter flag to control publication. Do not use a separate
 - **Image paths.** Use filenames (`hero.png`) and the build resolves them to
   `/assets/posts/<slug>/hero.png`. Absolute paths still work for external
   images or shared public assets.
+- **Post assets are copied verbatim.** They bypass Astro's image optimization
+  pipeline, so run `npm run optimize:images` after adding large images. Files
+  that would grow are skipped, so already-optimized images are safe.
 
 ## Verification
 

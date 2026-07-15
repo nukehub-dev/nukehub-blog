@@ -17,6 +17,8 @@
     "preview": "astro preview --host",
     "create:post": "node scripts/create-post.mjs",
     "create:author": "node scripts/create-author.mjs",
+    "optimize:images": "node scripts/optimize-images.js",
+    "generate:icons": "node scripts/generate-icons.mjs",
     "astro": "astro"
   },
   "repository": {
@@ -74,11 +76,13 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "glob": "^13.0.6",
     "globals": "^16.1.0",
     "gray-matter": "^4.0.3",
     "js-yaml": "^5.2.1",
     "prettier": "^3.8.4",
     "prettier-plugin-astro": "^0.14.1",
+    "sharp": "^0.35.3",
     "typescript": "^6.0.3",
     "wrangler": "^4.107.0"
   }

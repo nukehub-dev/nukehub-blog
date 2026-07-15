@@ -150,8 +150,10 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `public/` — static assets: fonts, favicon, images, robots.txt, PWA
   manifest, the service worker template (`sw.js.tpl`), and the Pages
   advanced-mode worker (`_worker.js`).
-- `scripts/` — repo tooling: post/author scaffolding and the prebuild
-  service worker cache stamp (`inject-sw-cache.js`).
+- `scripts/` — repo tooling: post/author scaffolding, the prebuild service
+  worker cache stamp (`inject-sw-cache.js`), PWA icon generation
+  (`generate-icons.mjs`), and manual in-place image optimization
+  (`optimize-images.js`).
 - `docs/` — project documentation for contributors and content authors.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `wrangler.toml` — Cloudflare Pages compatibility and output config.
