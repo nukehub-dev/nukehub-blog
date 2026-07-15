@@ -1104,3 +1104,12 @@ html.homepage {
     transform: none;
   }
 }
+
+/* Fullscreen Mermaid diagrams: scale the svg to the viewport, overriding the
+   inline max-width mermaid bakes into the svg element. */
+.mermaid-expanded svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: calc(100vh - 8rem);
+}

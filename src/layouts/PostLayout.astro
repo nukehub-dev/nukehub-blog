@@ -4,7 +4,7 @@ import { getEntry, getCollection, render } from "astro:content";
 import { cn } from "@lib/utils";
 import BaseLayout from "./BaseLayout.astro";
 import { Badge } from "@components/ui/Badge";
-import { Image } from "@components/ui/Image";
+import { CoverImage } from "@components/blog/CoverImage";
 import { AuthorBio } from "@components/blog/AuthorBio";
 import { PostCard } from "@components/blog/PostCard";
 import PostContent from "@components/blog/PostContent.astro";
@@ -216,7 +216,7 @@ const articleJsonLd = {
             coverImageSrc && (
               <div
                 class={cn(
-                  "overflow-hidden rounded-md border border-border/50",
+                  "overflow-hidden rounded-xl border border-border/50",
                   isContain ? "flex items-center justify-center" : "bg-muted",
                   isContain && !coverImageTransparent && "bg-muted",
                 )}
@@ -226,15 +226,11 @@ const articleJsonLd = {
                     : undefined
                 }
               >
-                <Image
+                <CoverImage
                   src={coverImageSrc}
                   alt={title}
-                  aspect="auto"
-                  rounded="none"
                   fit={fit}
                   transparent={coverImageTransparent}
-                  loading="eager"
-                  wrapperClassName="w-full"
                   client:load
                 />
               </div>

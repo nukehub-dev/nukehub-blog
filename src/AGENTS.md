@@ -53,9 +53,12 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 - `src/components/shared/` — global UI islands: `ThemeToggle`,
   `ScrollProgress`, `ErrorBoundary`, `Analytics`, `CommandPalette`,
   `CommandPaletteManager`, `GlassContextMenu`, `GlobalContextMenu`,
-  `MagneticButton`. Also `decorations/FloatingParticles`.
+  `MagneticButton`, `ImageLightbox` (shared fullscreen image overlay used by
+  `ImageFigure` and `CoverImage`). Also `decorations/FloatingParticles`.
 - `src/components/blog/` — blog-specific components: `PostCard`, `PostList`,
-  `PostHero`, `PostContent`, `CategoryNav`, `AuthorBio`, `TableOfContents`,
+  `PostHero`, `PostContent`, `CoverImage` (post-page cover in `PostLayout`,
+  opens the shared lightbox on click), `CategoryNav`, `AuthorBio`,
+  `TableOfContents`,
   `NewsletterSignup` (subscribe/unsubscribe form with optional `source` prop),
   `PostShareCite` (Share menu on every post; Cite dialog only when the post
   sets `citable: true`), etc.

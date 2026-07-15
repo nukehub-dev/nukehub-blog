@@ -236,7 +236,8 @@ pointing to the fetchable `.glb` URL.
 ### Diagrams
 
 Use `<Mermaid />` for flowcharts, sequence diagrams, Gantt charts, and other
-diagrams. Pass the diagram source as a string.
+diagrams. Pass the diagram source as a string. Diagrams render in a card with
+a fullscreen expand toggle in the top-right corner (Esc to exit).
 
 ```mdx
 <Mermaid
