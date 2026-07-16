@@ -14,7 +14,15 @@ export default defineConfig({
     prefetchAll: false,
     defaultStrategy: "hover",
   },
-  integrations: [react(), mdx(), sitemap(), markdownNegotiation()],
+  integrations: [
+    react(),
+    mdx(),
+    sitemap({
+      // Keep the PWA offline fallback out of the sitemap — it should never be indexed.
+      filter: (page) => page !== "https://blog.nukehub.org/offline/",
+    }),
+    markdownNegotiation(),
+  ],
   vite: {
     plugins: [tailwindcss(), postAssetsPlugin()],
     build: {
