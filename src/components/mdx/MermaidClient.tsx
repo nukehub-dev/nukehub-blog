@@ -20,7 +20,11 @@ export function Mermaid({ chart, className }: MermaidProps) {
   const [expanded, setExpanded] = useState(false);
   const chartRef = useRef(chart);
   const isMountedRef = useRef(true);
-  chartRef.current = chart;
+
+  // Keep chartRef in sync so async renders use the latest chart source.
+  useEffect(() => {
+    chartRef.current = chart;
+  });
 
   // Lock body scroll and close on Escape while expanded.
   useEffect(() => {

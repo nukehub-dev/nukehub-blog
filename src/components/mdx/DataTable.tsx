@@ -81,11 +81,6 @@ export function DataTable<T extends Record<string, React.ReactNode>>({
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("asc");
   const [page, setPage] = React.useState(1);
 
-  // Reset pagination when the query changes.
-  React.useEffect(() => {
-    setPage(1);
-  }, [query]);
-
   const filtered = React.useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return data;
@@ -159,7 +154,11 @@ export function DataTable<T extends Record<string, React.ReactNode>>({
                 type="text"
                 placeholder="Search table…"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  // Reset pagination when the query changes.
+                  setQuery(e.target.value);
+                  setPage(1);
+                }}
                 className="pl-9"
                 aria-label="Search table"
               />

@@ -121,9 +121,11 @@ export function Plotly({
   const configRef = useRef(config);
 
   // Keep refs in sync without re-triggering effects.
-  dataRef.current = data;
-  layoutRef.current = layout;
-  configRef.current = config;
+  useEffect(() => {
+    dataRef.current = data;
+    layoutRef.current = layout;
+    configRef.current = config;
+  });
 
   // Initial render.
   useEffect(() => {

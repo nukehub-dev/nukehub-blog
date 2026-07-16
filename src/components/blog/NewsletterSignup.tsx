@@ -59,6 +59,24 @@ export function NewsletterSignup({
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
+  const renderWidget = () => {
+    if (
+      !turnstileRef.current ||
+      !window.turnstile ||
+      TURNSTILE_SITE_KEY === ""
+    ) {
+      return;
+    }
+    if (widgetIdRef.current) return;
+
+    widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+      sitekey: TURNSTILE_SITE_KEY,
+      theme: "auto",
+      size: "invisible",
+      appearance: "interaction-only",
+    });
+  };
+
   useEffect(() => {
     if (TURNSTILE_SITE_KEY === "") return;
 
@@ -81,24 +99,6 @@ export function NewsletterSignup({
       }
     };
   }, []);
-
-  const renderWidget = () => {
-    if (
-      !turnstileRef.current ||
-      !window.turnstile ||
-      TURNSTILE_SITE_KEY === ""
-    ) {
-      return;
-    }
-    if (widgetIdRef.current) return;
-
-    widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-      sitekey: TURNSTILE_SITE_KEY,
-      theme: "auto",
-      size: "invisible",
-      appearance: "interaction-only",
-    });
-  };
 
   const resetWidget = () => {
     if (widgetIdRef.current && window.turnstile?.reset) {

@@ -163,14 +163,16 @@ export function CommandPalette({
   categories,
   pages,
 }: CommandPaletteProps) {
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [query, setQuery] = React.useState("");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const resultsRef = React.useRef<HTMLDivElement>(null);
   const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
-
-  React.useEffect(() => setMounted(true), []);
 
   const allItems = React.useMemo<SearchItem[]>(
     () => [
@@ -200,16 +202,19 @@ export function CommandPalette({
     [filteredItems],
   );
 
-  React.useEffect(() => {
+  // Reset selection and stale query when the palette opens or closes.
+  const [prevIsOpen, setPrevIsOpen] = React.useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     setSelectedIndex(0);
-  }, [query, isOpen]);
+    if (!isOpen) setQuery("");
+  }
 
   React.useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(timer);
     }
-    setQuery("");
   }, [isOpen]);
 
   React.useEffect(() => {
@@ -305,7 +310,10 @@ export function CommandPalette({
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setSelectedIndex(0);
+                }}
                 placeholder="Search posts, authors, categories..."
                 className="flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
                 aria-label="Search"

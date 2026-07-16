@@ -27,10 +27,14 @@ const options: {
   { value: "system", label: "System", icon: Monitor },
 ];
 
-function getIcon(preference: ThemePreference) {
-  if (preference === "system") return Monitor;
-  return preference === "dark" ? Moon : Sun;
-}
+const preferenceIcons: Record<
+  ThemePreference,
+  React.ComponentType<{ className?: string }>
+> = {
+  light: Sun,
+  dark: Moon,
+  system: Monitor,
+};
 
 export interface ThemeToggleProps {
   className?: string;
@@ -57,12 +61,16 @@ export function ThemeToggle({
     null,
   );
 
-  // Initialise from DOM / localStorage on mount
+  // Initialise from DOM / localStorage on mount. Deferred to a timer so the
+  // sync runs in a callback rather than synchronously in the effect body.
   React.useEffect(() => {
-    const pref = getThemePreference();
-    setPreferenceState(pref);
-    setResolved(resolveTheme(pref));
-    setAccentState(getAccentColor());
+    const id = setTimeout(() => {
+      const pref = getThemePreference();
+      setPreferenceState(pref);
+      setResolved(resolveTheme(pref));
+      setAccentState(getAccentColor());
+    }, 0);
+    return () => clearTimeout(id);
   }, []);
 
   // Sync across browser tabs
@@ -120,7 +128,7 @@ export function ThemeToggle({
     apply(next);
   };
 
-  const Icon = getIcon(preference);
+  const Icon = preferenceIcons[preference];
   const resolvedLabel =
     preference === "system"
       ? `System (${resolved})`

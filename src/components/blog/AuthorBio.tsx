@@ -121,7 +121,7 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
 
   const NameHeading = <h3 className="font-semibold text-foreground">{name}</h3>;
 
-  function Avatar({ className: avatarClassName }: { className?: string }) {
+  function renderAvatar(avatarClassName?: string) {
     if (avatar) {
       return (
         <Image
@@ -154,10 +154,10 @@ export function AuthorBio({ author, href, className }: AuthorBioProps) {
     >
       {href ? (
         <a href={href} className="shrink-0">
-          <Avatar />
+          {renderAvatar()}
         </a>
       ) : (
-        <Avatar className="shrink-0" />
+        renderAvatar("shrink-0")
       )}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">

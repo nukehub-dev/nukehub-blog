@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useContext,
   useLayoutEffect,
+  useSyncExternalStore,
   createContext,
   Children,
   isValidElement,
@@ -43,11 +44,12 @@ export function GlassContextMenu({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [adjustedPos, setAdjustedPos] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  /* false during SSR / hydration, true once on the client */
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const close = useCallback(() => setIsOpen(false), []);
 
@@ -351,10 +353,6 @@ export function ContextMenuSub({
     setReady(true);
   }, [open]);
 
-  useEffect(() => {
-    if (!open) setReady(false);
-  }, [open]);
-
   const scheduleShow = useCallback(() => {
     clearTimeout(hideTimer.current);
     clearTimeout(showTimer.current);
@@ -364,7 +362,10 @@ export function ContextMenuSub({
   const scheduleHide = useCallback(() => {
     clearTimeout(showTimer.current);
     clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => setOpen(false), 150);
+    hideTimer.current = setTimeout(() => {
+      setOpen(false);
+      setReady(false);
+    }, 150);
   }, []);
 
   const cancelHide = useCallback(() => {

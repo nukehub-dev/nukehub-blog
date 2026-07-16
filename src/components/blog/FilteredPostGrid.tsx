@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { PostList } from "@components/blog/PostList";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
@@ -34,11 +34,34 @@ export function FilteredPostGrid({
   const [sort, setSort] = useState<SortOption>("newest");
   const [perPage, setPerPage] = useState(12);
   const [page, setPage] = useState(1);
+  const [prevFilters, setPrevFilters] = useState({
+    search,
+    selectedCategories,
+    selectedYears,
+    selectedTags,
+    sort,
+    perPage,
+  });
 
   // Reset pagination when filters change.
-  useEffect(() => {
+  if (
+    prevFilters.search !== search ||
+    prevFilters.selectedCategories !== selectedCategories ||
+    prevFilters.selectedYears !== selectedYears ||
+    prevFilters.selectedTags !== selectedTags ||
+    prevFilters.sort !== sort ||
+    prevFilters.perPage !== perPage
+  ) {
+    setPrevFilters({
+      search,
+      selectedCategories,
+      selectedYears,
+      selectedTags,
+      sort,
+      perPage,
+    });
     setPage(1);
-  }, [search, selectedCategories, selectedYears, selectedTags, sort, perPage]);
+  }
 
   const allTags = useMemo(() => {
     const counts = new Map<string, number>();

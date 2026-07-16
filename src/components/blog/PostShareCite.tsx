@@ -41,6 +41,9 @@ const MENU_ITEM_CLASS = cn(
   "focus-visible:bg-accent focus-visible:outline-none",
 );
 
+// navigator.share availability never changes after mount.
+const subscribeNoop = () => () => {};
+
 export function PostShareCite({
   title,
   url,
@@ -51,7 +54,13 @@ export function PostShareCite({
 }: PostShareCiteProps) {
   const [shareOpen, setShareOpen] = React.useState(false);
   const [citeOpen, setCiteOpen] = React.useState(false);
-  const [nativeShare, setNativeShare] = React.useState(false);
+  // navigator.share is client-only; the false server snapshot keeps SSR and
+  // hydration output identical.
+  const nativeShare = React.useSyncExternalStore(
+    subscribeNoop,
+    () => typeof navigator.share === "function",
+    () => false,
+  );
   // "link" or a copy-format id, while the copied confirmation is visible.
   const [copied, setCopied] = React.useState<string | null>(null);
   const shareRef = React.useRef<HTMLDivElement>(null);
@@ -75,11 +84,6 @@ export function PostShareCite({
   );
   const [formatId, setFormatId] = React.useState<CopyFormat["id"]>("text");
   const currentFormat = formats.find((f) => f.id === formatId) ?? formats[0];
-
-  // Defer the navigator.share check to the client to avoid hydration mismatch.
-  React.useEffect(() => {
-    setNativeShare(typeof navigator.share === "function");
-  }, []);
 
   React.useEffect(() => {
     return () => {
