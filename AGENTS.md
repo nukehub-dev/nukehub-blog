@@ -3,7 +3,7 @@
 ## Purpose
 
 Binding work contract for AI agents and human contributors working on the
-NukeHub Blog (`blog.nukehub.org`): an independent Astro 6 static site that
+NukeHub Blog (`blog.nukehub.org`): an independent Astro 7 static site that
 publishes NukeHub news, tutorials, nuclear industry updates, and community
 spotlights.
 

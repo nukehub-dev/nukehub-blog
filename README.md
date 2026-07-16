@@ -1,12 +1,12 @@
 # NukeHub Blog
 
 The NukeHub Blog at [blog.nukehub.org](https://blog.nukehub.org) — an
-independent Astro 6 static site that publishes NukeHub news, tutorials, nuclear
+independent Astro 7 static site that publishes NukeHub news, tutorials, nuclear
 industry updates, and community spotlights.
 
 ## Tech stack
 
-- [Astro 6](https://astro.build/) with static output
+- [Astro 7](https://astro.build/) with static output
 - [React 19](https://react.dev/) islands for interactivity
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [MDX](https://mdxjs.com/) for posts

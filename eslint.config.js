@@ -47,8 +47,14 @@ export default [
       "jsx-a11y/interactive-supports-focus": "warn",
       "jsx-a11y/click-events-have-key-events": "warn",
       "jsx-a11y/heading-has-content": "warn",
-      "react-hooks/rules-of-hooks": "warn",
-      "react-hooks/exhaustive-deps": "warn",
+      // react-hooks v7 bundles React Compiler diagnostics as errors in the
+      // recommended set; this project keeps all react-hooks rules as warnings.
+      ...Object.fromEntries(
+        Object.keys(reactHooks.configs.recommended.rules).map((rule) => [
+          rule,
+          "warn",
+        ]),
+      ),
     },
   },
 

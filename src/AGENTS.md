@@ -12,7 +12,7 @@ All files under `src/` except `src/content/` (own NAD). Also owns
 
 ## Local Contracts
 
-- Astro 6 static output (`output: "static"`). Every route is prerendered to
+- Astro 7 static output (`output: "static"`). Every route is prerendered to
   `dist/**`.
 - React islands via `@astrojs/react`; MDX via `@astrojs/mdx`; sitemap via
   `@astrojs/sitemap`; Tailwind v4 via `@tailwindcss/vite`.
