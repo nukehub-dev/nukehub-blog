@@ -3,3 +3,8 @@
 # feed is public content, so allow any origin (also covers local dev).
 /rss.xml
   Access-Control-Allow-Origin: *
+
+# Markdown siblings: serve with explicit UTF-8 charset so direct .md URLs
+# render correctly in browsers instead of being misinterpreted as Latin-1.
+/*.md
+  Content-Type: text/markdown; charset=utf-8
