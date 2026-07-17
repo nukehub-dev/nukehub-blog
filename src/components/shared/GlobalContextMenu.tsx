@@ -1,6 +1,7 @@
 "use client";
 
-import { Link, ArrowUp, Search, Command, Plus } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Link, ArrowUp, Search, Command, Plus, Copy } from "lucide-react";
 import { navItems } from "@data/nav";
 import {
   GlassContextMenu,
@@ -8,9 +9,33 @@ import {
   ContextMenuSeparator,
 } from "./GlassContextMenu";
 
+function getSelectedText(): string {
+  const active = document.activeElement;
+  if (
+    active instanceof HTMLInputElement ||
+    active instanceof HTMLTextAreaElement
+  ) {
+    const start = active.selectionStart ?? 0;
+    const end = active.selectionEnd ?? 0;
+    return active.value.slice(start, end).trim();
+  }
+  return window.getSelection()?.toString().trim() ?? "";
+}
+
 export function GlobalContextMenu() {
+  const [selection, setSelection] = useState("");
+
+  const handleContextMenu = useCallback(() => {
+    setSelection(getSelectedText());
+  }, []);
+
+  const handleCopySelection = async () => {
+    if (!selection) return;
+    await navigator.clipboard.writeText(selection);
+  };
+
   return (
-    <GlassContextMenu title="Navigation">
+    <GlassContextMenu title="Navigation" onContextMenu={handleContextMenu}>
       {/* Quick actions */}
       <ContextMenuItem
         icon={Search}
@@ -27,6 +52,11 @@ export function GlobalContextMenu() {
       >
         Search
       </ContextMenuItem>
+      {selection && (
+        <ContextMenuItem icon={Copy} onClick={handleCopySelection}>
+          Copy selection
+        </ContextMenuItem>
+      )}
       <ContextMenuItem
         icon={Link}
         onClick={() => navigator.clipboard.writeText(window.location.href)}

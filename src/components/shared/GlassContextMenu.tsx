@@ -33,12 +33,14 @@ interface GlassContextMenuProps {
   children: React.ReactNode;
   scopeRef?: React.RefObject<HTMLElement | null>;
   title?: string;
+  onContextMenu?: (e: MouseEvent) => void;
 }
 
 export function GlassContextMenu({
   children,
   scopeRef,
   title,
+  onContextMenu,
 }: GlassContextMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -58,6 +60,7 @@ export function GlassContextMenu({
       if (scopeRef?.current && !scopeRef.current.contains(e.target as Node)) {
         return;
       }
+      onContextMenu?.(e);
       e.preventDefault();
       if (scopeRef?.current) {
         e.stopPropagation();
@@ -65,7 +68,7 @@ export function GlassContextMenu({
       setPosition({ x: e.clientX, y: e.clientY });
       setIsOpen(true);
     },
-    [scopeRef],
+    [scopeRef, onContextMenu],
   );
 
   useEffect(() => {
