@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Link, ArrowUp, Search, Command, Plus, Copy } from "lucide-react";
+import {
+  Link,
+  ArrowUp,
+  Search,
+  Command,
+  Plus,
+  Copy,
+  Share2,
+} from "lucide-react";
 import { navItems } from "@data/nav";
 import {
   GlassContextMenu,
@@ -24,6 +32,10 @@ function getSelectedText(): string {
 
 export function GlobalContextMenu() {
   const [selection, setSelection] = useState("");
+  const [canShare] = useState(
+    () =>
+      typeof navigator !== "undefined" && typeof navigator.share === "function",
+  );
 
   const handleContextMenu = useCallback(() => {
     setSelection(getSelectedText());
@@ -32,6 +44,22 @@ export function GlobalContextMenu() {
   const handleCopySelection = async () => {
     if (!selection) return;
     await navigator.clipboard.writeText(selection);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = document.title;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+      }
+    }
+
+    await navigator.clipboard.writeText(url);
   };
 
   return (
@@ -63,6 +91,11 @@ export function GlobalContextMenu() {
       >
         Copy link
       </ContextMenuItem>
+      {canShare && (
+        <ContextMenuItem icon={Share2} onClick={handleShare}>
+          Share page
+        </ContextMenuItem>
+      )}
       <ContextMenuItem
         icon={ArrowUp}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
